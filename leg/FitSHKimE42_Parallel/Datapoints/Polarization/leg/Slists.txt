@@ -1,0 +1,8 @@
+Baltay0	2.129
+Dauber0	2.108
+Dauber1	2.274
+Berge0	1.932
+Berge1	1.977
+Berge2	2.021
+Berge3	2.065
+Berge4	2.108

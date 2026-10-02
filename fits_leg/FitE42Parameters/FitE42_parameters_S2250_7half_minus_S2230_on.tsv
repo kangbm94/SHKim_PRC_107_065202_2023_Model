@@ -1,0 +1,25 @@
+quantity	value	error	lower	upper
+hypothesis	S2250 7/2-, S2230 on			
+chi2_total	745376.5284			
+chi2_polarization	660.4514123			
+chi2_forward_cross_section	0			
+chi2_differential_cross_section	744716.077			
+BIC	745450.1552			
+N_total	462			
+N_polarization	15			
+N_forward_cross_section	0			
+N_differential_cross_section	447			
+N_parameters	12			
+minuit_status	3			
+Sigma2030.scale	-0.7091627957	0.001524166178	-3	3
+Sigma2030.mass_GeV	2.025	2.098774581e-07	2.025	2.04
+Sigma2030.width_GeV	0.15	7.562607484e-06	0.15	0.2
+Lambda2100.scale	-0.07460795378	0.001006473744	-3	3
+Lambda2100.mass_GeV	2.10005939	0.0002949574688	2.09	2.11
+Lambda2100.width_GeV	0.1	2.184688485e-05	0.1	0.25
+Sigma2250.scale	3	0.000291714352	-3	3
+Sigma2250.mass_GeV	2.273274082	0.000454433837	2.21	2.28
+Sigma2250.width_GeV	0.08349023013	0.0007985758116	0.06	0.15
+Sigma2230.scale	3	2.24652463e-05	-3	3
+Sigma2230.mass_GeV	2.217958488	0.000132978903	2.213	2.267
+Sigma2230.width_GeV	0.295	1.051273437e-06	0.295	0.395

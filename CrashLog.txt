@@ -1,0 +1,639 @@
+-------------------------------------
+Translated Report (Full Report Below)
+-------------------------------------
+
+Process:               root.exe [95836]
+Path:                  /opt/homebrew/*/root.exe
+Identifier:            root.exe
+Version:               ???
+Code Type:             ARM-64 (Native)
+Parent Process:        Exited process [95835]
+Responsible:           Terminal [567]
+User ID:               502
+
+Date/Time:             2026-09-16 20:41:54.5969 +0900
+OS Version:            macOS 14.6.1 (23G93)
+Report Version:        12
+Anonymous UUID:        FE9F38DE-E947-B37A-8680-63A2D390BC18
+
+Sleep/Wake UUID:       502986C3-8BAA-4A1F-92AC-50E986380C4B
+
+Time Awake Since Boot: 690000 seconds
+Time Since Wake:       205860 seconds
+
+System Integrity Protection: enabled
+
+Crashed Thread:        0  Dispatch queue: com.apple.main-thread
+
+Exception Type:        EXC_BREAKPOINT (SIGTRAP)
+Exception Codes:       0x0000000000000001, 0x00000001a9d7eff0
+
+Termination Reason:    Namespace SIGNAL, Code 5 Trace/BPT trap: 5
+Terminating Process:   exc handler [95836]
+
+Thread 0 Crashed::  Dispatch queue: com.apple.main-thread
+0   libunwind.dylib               	       0x1a9d7eff0 libunwind::UnwindCursor<libunwind::LocalAddressSpace, libunwind::Registers_arm64>::step(bool) + 2212
+1   libunwind.dylib               	       0x1a9d80cd8 _Unwind_RaiseException + 456
+2   libc++abi.dylib               	       0x19d0eb284 __cxa_throw + 300
+3   ???                           	       0x15fc9899c ???
+4   ???                           	       0x15fc97ecc ???
+5   ???                           	       0x15fce52e8 ???
+6   ???                           	       0x15fce4144 ???
+7   ???                           	       0x15fcde42c ???
+8   ???                           	       0x15fc80bcc ???
+9   ???                           	       0x15fc7a8c0 ???
+10  libCling.so                   	       0x10950d5fc cling::IncrementalExecutor::executeWrapper(llvm::StringRef, cling::Value*) const + 184
+11  libCling.so                   	       0x109524094 cling::Interpreter::RunFunction(clang::FunctionDecl const*, cling::Value*) + 320
+12  libCling.so                   	       0x109522630 cling::Interpreter::EvaluateInternal(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, cling::CompilationOptions, cling::Value*, cling::Transaction**, unsigned long) + 224
+13  libCling.so                   	       0x109570288 cling::MetaSema::actOnxCommand(llvm::StringRef, llvm::StringRef, cling::Value*) + 1080
+14  libCling.so                   	       0x10956a3e8 cling::MetaParser::isXCommand(cling::MetaSema::ActionResult&, cling::Value*) + 1164
+15  libCling.so                   	       0x109569c10 cling::MetaParser::isCommand(cling::MetaSema::ActionResult&, cling::Value*) + 104
+16  libCling.so                   	       0x10956d324 cling::MetaProcessor::process(llvm::StringRef, cling::Interpreter::CompilationResult&, cling::Value*, bool) + 208
+17  libCling.so                   	       0x1091dfd58 HandleInterpreterException(cling::MetaProcessor*, char const*, cling::Interpreter::CompilationResult&, cling::Value*) + 84
+18  libCling.so                   	       0x1091df604 TCling::ProcessLine(char const*, TInterpreter::EErrorCode*) + 3420
+19  libCling.so                   	       0x1091e270c TCling::ProcessLineSynch(char const*, TInterpreter::EErrorCode*) + 176
+20  libCore.so                    	       0x101af411c TApplication::ExecuteFile(char const*, int*, bool) + 3024
+21  libCore.so                    	       0x101af3540 TApplication::ProcessFile(char const*, int*, bool) + 56
+22  libCore.so                    	       0x101af31b8 TApplication::ProcessLine(char const*, bool, int*) + 3704
+23  libRint.so                    	       0x101404414 TRint::ProcessLineNr(char const*, char const*, int*) + 896
+24  libRint.so                    	       0x1014054c0 TRint::HandleTermInput() + 928
+25  libRint.so                    	       0x101401818 TTermInputHandler::Notify() + 40
+26  libRint.so                    	       0x101406450 TTermInputHandler::ReadNotify() + 32
+27  libCore.so                    	       0x101d029d8 TUnixSystem::CheckDescriptors() + 400
+28  libCore.so                    	       0x101d139c4 TMacOSXSystem::DispatchOneEvent(bool) + 512
+29  libCore.so                    	       0x101b9f61c TSystem::InnerLoop() + 56
+30  libCore.so                    	       0x101b9f494 TSystem::Run() + 608
+31  libCore.so                    	       0x101af4630 TApplication::Run(bool) + 96
+32  libRint.so                    	       0x101403cf8 TRint::Run(bool) + 2612
+33  root.exe                      	       0x100f5bd98 main + 96
+34  dyld                          	       0x19cda7154 start + 2476
+
+Thread 1:
+0   libsystem_pthread.dylib       	       0x19d12cd20 start_wqthread + 0
+
+Thread 2:: com.apple.NSEventThread
+0   libsystem_kernel.dylib        	       0x19d0f0df4 mach_msg2_trap + 8
+1   libsystem_kernel.dylib        	       0x19d1035e4 mach_msg2_internal + 80
+2   libsystem_kernel.dylib        	       0x19d0f99c4 mach_msg_overwrite + 476
+3   libsystem_kernel.dylib        	       0x19d0f1178 mach_msg + 24
+4   CoreFoundation                	       0x19d211680 __CFRunLoopServiceMachPort + 160
+5   CoreFoundation                	       0x19d20ff44 __CFRunLoopRun + 1208
+6   CoreFoundation                	       0x19d20f434 CFRunLoopRunSpecific + 608
+7   AppKit                        	       0x1a0b99280 _NSEventThread + 144
+8   libsystem_pthread.dylib       	       0x19d131f94 _pthread_start + 136
+9   libsystem_pthread.dylib       	       0x19d12cd34 thread_start + 8
+
+
+Thread 0 crashed with ARM Thread State (64-bit):
+    x0: 0x000000016ee9e228   x1: 0x000000016ee9fa30   x2: 0x0000000000000000   x3: 0x0000000000000000
+    x4: 0x0000000000001718   x5: 0x0000000000000018   x6: 0x0019370100193780   x7: 0xffffffff00193600
+    x8: 0x000000016ee9e538   x9: 0x000000016ee9e328  x10: 0x000000015fc75648  x11: 0x000000016ee9cf40
+   x12: 0x000000015fc75639  x13: 0x0000000000000001  x14: 0xffffffffffffffff  x15: 0x00193601001936c0
+   x16: 0x400000015fc97ecc  x17: 0x000000015fc97ecc  x18: 0x0000000000000000  x19: 0x000000016ee9f930
+   x20: 0x000000016eea0860  x21: 0x000000016ee9f940  x22: 0x000000016eea0860  x23: 0x000000015fc97ecc
+   x24: 0x000000016ee9fa40  x25: 0x000000016ee9e548  x26: 0x000000016ee9fa50  x27: 0x000000016ee9e438
+   x28: 0x000000016ee9f860   fp: 0x000000016ee9f920   lr: 0x00000001a9d7ee94
+    sp: 0x000000016ee9e200   pc: 0x00000001a9d7eff0 cpsr: 0x20001000
+   far: 0x0000000000000000  esr: 0xf200c471 (Breakpoint) pointer authentication trap IB
+
+Binary Images:
+       0x16ac94000 -        0x16ad57fff libHistPainter.so (*) <5ffd4642-be84-381a-b446-ba520500c926> /Users/USER/*/libHistPainter.so
+       0x16a314000 -        0x16a46ffff libASImage.so (*) <37ee73f9-1025-370b-9eda-8f8d10811c9b> /Users/USER/*/libASImage.so
+       0x16a16c000 -        0x16a1c7fff libPostscript.so (*) <11616d15-8df9-3da2-aecf-0a54f1c1cae9> /Users/USER/*/libPostscript.so
+       0x14bb04000 -        0x14bb0ffff libobjc-trampolines.dylib (*) <7d6ca1cb-c5e6-38b6-9618-2c580486fc6b> /usr/lib/libobjc-trampolines.dylib
+       0x169710000 -        0x1697f3fff libGCocoa.so (*) <37b357d9-63d9-37c0-a759-beab53053363> /Users/USER/*/libGCocoa.so
+       0x168d94000 -        0x168dabfff libGQuartz.so (*) <b379b680-d62f-38f9-a4fd-70d244037ea9> /Users/USER/*/libGQuartz.so
+       0x16a58c000 -        0x16a7effff libGui.so (*) <027704f7-6f0e-3197-a409-7c93617507f4> /Users/USER/*/libGui.so
+       0x168d00000 -        0x168d5bfff libMinuit.so (*) <43a90627-e4b5-301f-b3f3-72858724031a> /Users/USER/*/libMinuit.so
+       0x169000000 -        0x169097fff libGpad.so (*) <9fd8db5d-15d2-3faf-8c21-17d40885f7f1> /Users/USER/*/libGpad.so
+       0x169324000 -        0x16947ffff libGraf.so (*) <6b64c291-ca8b-32f7-8f0c-ad7284bcd12e> /Users/USER/*/libGraf.so
+       0x169b54000 -        0x169e93fff libHist.so (*) <caa5efe9-7f94-3dd4-a584-9980fff0d136> /Users/USER/*/libHist.so
+       0x169110000 -        0x16921bfff libMatrix.so (*) <dce7cd8f-753a-349b-882b-c9555ba0527e> /Users/USER/*/libMatrix.so
+       0x104fa0000 -        0x104fabfff libtbbmalloc.2.16.dylib (*) <f07bf019-f9b0-39f5-a6a6-23f2fdc9501f> /opt/homebrew/*/libtbbmalloc.2.16.dylib
+       0x14b138000 -        0x14b36ffff libMathCore.so (*) <eac8a577-e42e-3e93-ab67-3cf986860a3a> /Users/USER/*/libMathCore.so
+       0x14ac04000 -        0x14ac23fff libImt.so (*) <7332521c-a06f-35f0-bc1f-3291f01c9a7b> /Users/USER/*/libImt.so
+       0x102740000 -        0x10274ffff libMultiProc.so (*) <89a8ca64-ca09-3b5a-84af-b8260b803a39> /Users/USER/*/libMultiProc.so
+       0x14a950000 -        0x14a967fff libtbb.12.16.dylib (*) <f0392915-3f20-31a5-be96-44b24dbcc9a6> /opt/homebrew/*/libtbb.12.16.dylib
+       0x14ad4c000 -        0x14adbffff libNet.so (*) <a0350954-f8bb-36e4-96cf-ae56423107fe> /Users/USER/*/libNet.so
+       0x14ae2c000 -        0x14aebffff libssl.3.dylib (*) <06428b1e-2519-35b4-8f5c-4f6c81b7737f> /opt/homebrew/*/libssl.3.dylib
+       0x14bb18000 -        0x14be57fff libcrypto.3.dylib (*) <7062d2e1-27c3-33b2-9764-78464d239f63> /opt/homebrew/*/libcrypto.3.dylib
+       0x108f74000 -        0x10d38ffff libCling.so (*) <d229a101-cb47-3d25-818b-358cdfc42ab2> /Users/USER/*/libCling.so
+       0x10276c000 -        0x102a77fff libRIO.so (*) <9a1ee435-d846-360e-895f-9ccfa72905dd> /Users/USER/*/libRIO.so
+       0x101010000 -        0x10104bfff libThread.so (*) <0dcb0adc-8b2e-39db-add5-272e531febdb> /Users/USER/*/libThread.so
+       0x1013fc000 -        0x10141ffff libRint.so (*) <aaf20579-8470-32ce-acb1-e4b620946be4> /Users/USER/*/libRint.so
+       0x101ae0000 -        0x101e2bfff libCore.so (*) <3b2a2650-8abe-343b-9d11-70dfe420b235> /Users/USER/*/libCore.so
+       0x1013c8000 -        0x1013cffff libxxhash.0.8.3.dylib (*) <a2911333-2515-3ee3-bf24-898591900a73> /opt/homebrew/*/libxxhash.0.8.3.dylib
+       0x101474000 -        0x101493fff liblz4.1.10.0.dylib (*) <88b25dd4-c1ab-3a03-86d7-2b1595bb49d1> /opt/homebrew/*/liblz4.1.10.0.dylib
+       0x101540000 -        0x1015cbfff libzstd.1.5.7.dylib (*) <a101f9a2-32da-3484-ac68-4d3a5f26da31> /opt/homebrew/*/libzstd.1.5.7.dylib
+       0x100f58000 -        0x100f5bfff root.exe (*) <cd8b5ea6-e3f0-3750-b379-c48c32d91cb8> /opt/homebrew/*/root.exe
+       0x1a9d77000 -        0x1a9d82fff libunwind.dylib (*) <40a5125b-1225-337b-9d1a-968356d29580> /usr/lib/system/libunwind.dylib
+       0x19d0d4000 -        0x19d0efffb libc++abi.dylib (*) <68e3eb36-b4ba-30e0-a240-31e942936d06> /usr/lib/libc++abi.dylib
+               0x0 - 0xffffffffffffffff ??? (*) <00000000-0000-0000-0000-000000000000> ???
+       0x19cda1000 -        0x19ce2a507 dyld (*) <f635824e-318b-3f0c-842c-c369737f2b68> /usr/lib/dyld
+       0x19d12b000 -        0x19d137fff libsystem_pthread.dylib (*) <e03e8478-6f5c-3d21-a79a-58408f514000> /usr/lib/system/libsystem_pthread.dylib
+       0x19d0f0000 -        0x19d12affb libsystem_kernel.dylib (*) <71ff45b8-f14e-3666-9e96-6cf58315b91d> /usr/lib/system/libsystem_kernel.dylib
+       0x19d193000 -        0x19d66bfff com.apple.CoreFoundation (6.9) <55720ee0-d8c3-33a1-9854-8e61a6f44895> /System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation
+       0x1a0a35000 -        0x1a1d73fff com.apple.AppKit (6.9) <7acbeef9-a453-3e4d-98ac-f9441d86e183> /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit
+
+External Modification Summary:
+  Calls made by other processes targeting this process:
+    task_for_pid: 0
+    thread_create: 0
+    thread_set_state: 0
+  Calls made by this process:
+    task_for_pid: 0
+    thread_create: 0
+    thread_set_state: 0
+  Calls made by all processes on this machine:
+    task_for_pid: 0
+    thread_create: 0
+    thread_set_state: 0
+
+VM Region Summary:
+ReadOnly portion of Libraries: Total=979.2M resident=0K(0%) swapped_out_or_unallocated=979.2M(100%)
+Writable regions: Total=2.4G written=0K(0%) resident=0K(0%) swapped_out=0K(0%) unallocated=2.4G(100%)
+
+                                VIRTUAL   REGION 
+REGION TYPE                        SIZE    COUNT (non-coalesced) 
+===========                     =======  ======= 
+Accelerate framework               384K        3 
+Activity Tracing                   256K        1 
+CG image                          31.0M        7 
+CG raster data                    16.1M        6 
+ColorSync                          528K       24 
+CoreGraphics                        48K        3 
+CoreGraphics (reserved)             16K        1         reserved VM address space (unallocated)
+Foundation                          16K        1 
+Image IO                            64K        1 
+Kernel Alloc Once                   32K        1 
+MALLOC                             2.3G      155 
+MALLOC guard page                  192K       12 
+STACK GUARD                       56.0M        3 
+Stack                             9264K        3 
+VM_ALLOCATE                       24.0M      101 
+__AUTH                             973K      214 
+__AUTH_CONST                      16.1M      373 
+__CTF                               824        1 
+__DATA                            5627K      394 
+__DATA_CONST                      25.0M      403 
+__DATA_DIRTY                       924K      116 
+__FONT_DATA                          4K        1 
+__LINKEDIT                       569.3M       30 
+__OBJC_RO                         71.9M        2 
+__OBJC_RW                         2200K        1 
+__TEXT                           410.0M      416 
+dyld private memory                656K        4 
+mapped file                      524.9M      172 
+shared memory                      848K       14 
+===========                     =======  ======= 
+TOTAL                              4.0G     2463 
+TOTAL, minus reserved VM space     4.0G     2463 
+
+
+
+-----------
+Full Report
+-----------
+
+{"app_name":"root.exe","timestamp":"2026-09-16 20:41:54.00 +0900","app_version":"","slice_uuid":"cd8b5ea6-e3f0-3750-b379-c48c32d91cb8","build_version":"","platform":1,"share_with_app_devs":1,"is_first_party":1,"bug_type":"309","os_version":"macOS 14.6.1 (23G93)","roots_installed":0,"incident_id":"54827D73-0039-4D31-812C-A7A66B6C10CA","name":"root.exe"}
+{
+  "uptime" : 690000,
+  "procRole" : "Background",
+  "version" : 2,
+  "userID" : 502,
+  "deployVersion" : 210,
+  "modelCode" : "MacBookPro18,3",
+  "coalitionID" : 567,
+  "osVersion" : {
+    "train" : "macOS 14.6.1",
+    "build" : "23G93",
+    "releaseType" : "User"
+  },
+  "captureTime" : "2026-09-16 20:41:54.5969 +0900",
+  "codeSigningMonitor" : 1,
+  "incident" : "54827D73-0039-4D31-812C-A7A66B6C10CA",
+  "pid" : 95836,
+  "translated" : false,
+  "cpuType" : "ARM-64",
+  "roots_installed" : 0,
+  "bug_type" : "309",
+  "procLaunch" : "2026-09-16 20:41:18.2833 +0900",
+  "procStartAbsTime" : 16638901939560,
+  "procExitAbsTime" : 16639773407802,
+  "procName" : "root.exe",
+  "procPath" : "\/opt\/homebrew\/*\/root.exe",
+  "parentProc" : "Exited process",
+  "parentPid" : 95835,
+  "coalitionName" : "com.apple.Terminal",
+  "crashReporterKey" : "FE9F38DE-E947-B37A-8680-63A2D390BC18",
+  "responsiblePid" : 567,
+  "responsibleProc" : "Terminal",
+  "codeSigningID" : "root.exe",
+  "codeSigningTeamID" : "",
+  "codeSigningFlags" : 570556929,
+  "codeSigningValidationCategory" : 10,
+  "codeSigningTrustLevel" : 4294967295,
+  "instructionByteStream" : {"beforePC":"8AMUql8hA9X3AxGq8AMXqugLQPmQFsHa8QMQqvFDwdofAhHrQAAAVA==","atPC":"II441BAFwdrwnwH54eMIkeADFaoCIoBS9QwAlPADF6ogB0atQAcGrQ=="},
+  "wakeTime" : 205860,
+  "sleepWakeUUID" : "502986C3-8BAA-4A1F-92AC-50E986380C4B",
+  "sip" : "enabled",
+  "exception" : {"codes":"0x0000000000000001, 0x00000001a9d7eff0","rawCodes":[1,7144468464],"type":"EXC_BREAKPOINT","signal":"SIGTRAP"},
+  "termination" : {"flags":0,"code":5,"namespace":"SIGNAL","indicator":"Trace\/BPT trap: 5","byProc":"exc handler","byPid":95836},
+  "os_fault" : {"process":"root.exe"},
+  "extMods" : {"caller":{"thread_create":0,"thread_set_state":0,"task_for_pid":0},"system":{"thread_create":0,"thread_set_state":0,"task_for_pid":0},"targeted":{"thread_create":0,"thread_set_state":0,"task_for_pid":0},"warnings":0},
+  "faultingThread" : 0,
+  "threads" : [{"triggered":true,"id":7334374,"threadState":{"x":[{"value":6155788840},{"value":6155794992},{"value":0},{"value":0},{"value":5912},{"value":24},{"value":7097351853913984},{"value":18446744069416236544},{"value":6155789624},{"value":6155789096},{"value":5901866568},{"value":6155784000},{"value":5901866553},{"value":1},{"value":18446744073709551615},{"value":7096252342286016},{"value":4611686024329395916},{"value":5902008012},{"value":0},{"value":6155794736},{"value":6155798624},{"value":6155794752},{"value":6155798624},{"value":5902008012},{"value":6155795008},{"value":6155789640},{"value":6155795024},{"value":6155789368},{"value":6155794528}],"flavor":"ARM_THREAD_STATE64","lr":{"value":7144468116},"cpsr":{"value":536875008},"fp":{"value":6155794720},"sp":{"value":6155788800},"esr":{"value":4060136561,"description":"(Breakpoint) pointer authentication trap IB"},"pc":{"value":7144468464,"matchesCrashFrame":1},"far":{"value":0}},"queue":"com.apple.main-thread","frames":[{"imageOffset":32752,"symbol":"libunwind::UnwindCursor<libunwind::LocalAddressSpace, libunwind::Registers_arm64>::step(bool)","symbolLocation":2212,"imageIndex":29},{"imageOffset":40152,"symbol":"_Unwind_RaiseException","symbolLocation":456,"imageIndex":29},{"imageOffset":94852,"symbol":"__cxa_throw","symbolLocation":300,"imageIndex":30},{"imageOffset":5902010780,"imageIndex":31},{"imageOffset":5902008012,"imageIndex":31},{"imageOffset":5902324456,"imageIndex":31},{"imageOffset":5902319940,"imageIndex":31},{"imageOffset":5902296108,"imageIndex":31},{"imageOffset":5901913036,"imageIndex":31},{"imageOffset":5901887680,"imageIndex":31},{"imageOffset":5871100,"symbol":"cling::IncrementalExecutor::executeWrapper(llvm::StringRef, cling::Value*) const","symbolLocation":184,"imageIndex":20},{"imageOffset":5963924,"symbol":"cling::Interpreter::RunFunction(clang::FunctionDecl const*, cling::Value*)","symbolLocation":320,"imageIndex":20},{"imageOffset":5957168,"symbol":"cling::Interpreter::EvaluateInternal(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, cling::CompilationOptions, cling::Value*, cling::Transaction**, unsigned long)","symbolLocation":224,"imageIndex":20},{"imageOffset":6275720,"symbol":"cling::MetaSema::actOnxCommand(llvm::StringRef, llvm::StringRef, cling::Value*)","symbolLocation":1080,"imageIndex":20},{"imageOffset":6251496,"symbol":"cling::MetaParser::isXCommand(cling::MetaSema::ActionResult&, cling::Value*)","symbolLocation":1164,"imageIndex":20},{"imageOffset":6249488,"symbol":"cling::MetaParser::isCommand(cling::MetaSema::ActionResult&, cling::Value*)","symbolLocation":104,"imageIndex":20},{"imageOffset":6263588,"symbol":"cling::MetaProcessor::process(llvm::StringRef, cling::Interpreter::CompilationResult&, cling::Value*, bool)","symbolLocation":208,"imageIndex":20},{"imageOffset":2538840,"symbol":"HandleInterpreterException(cling::MetaProcessor*, char const*, cling::Interpreter::CompilationResult&, cling::Value*)","symbolLocation":84,"imageIndex":20},{"imageOffset":2536964,"symbol":"TCling::ProcessLine(char const*, TInterpreter::EErrorCode*)","symbolLocation":3420,"imageIndex":20},{"imageOffset":2549516,"symbol":"TCling::ProcessLineSynch(char const*, TInterpreter::EErrorCode*)","symbolLocation":176,"imageIndex":20},{"imageOffset":82204,"symbol":"TApplication::ExecuteFile(char const*, int*, bool)","symbolLocation":3024,"imageIndex":24},{"imageOffset":79168,"symbol":"TApplication::ProcessFile(char const*, int*, bool)","symbolLocation":56,"imageIndex":24},{"imageOffset":78264,"symbol":"TApplication::ProcessLine(char const*, bool, int*)","symbolLocation":3704,"imageIndex":24},{"imageOffset":33812,"symbol":"TRint::ProcessLineNr(char const*, char const*, int*)","symbolLocation":896,"imageIndex":23},{"imageOffset":38080,"symbol":"TRint::HandleTermInput()","symbolLocation":928,"imageIndex":23},{"imageOffset":22552,"symbol":"TTermInputHandler::Notify()","symbolLocation":40,"imageIndex":23},{"imageOffset":42064,"symbol":"TTermInputHandler::ReadNotify()","symbolLocation":32,"imageIndex":23},{"imageOffset":2238936,"symbol":"TUnixSystem::CheckDescriptors()","symbolLocation":400,"imageIndex":24},{"imageOffset":2308548,"symbol":"TMacOSXSystem::DispatchOneEvent(bool)","symbolLocation":512,"imageIndex":24},{"imageOffset":783900,"symbol":"TSystem::InnerLoop()","symbolLocation":56,"imageIndex":24},{"imageOffset":783508,"symbol":"TSystem::Run()","symbolLocation":608,"imageIndex":24},{"imageOffset":83504,"symbol":"TApplication::Run(bool)","symbolLocation":96,"imageIndex":24},{"imageOffset":31992,"symbol":"TRint::Run(bool)","symbolLocation":2612,"imageIndex":23},{"imageOffset":15768,"symbol":"main","symbolLocation":96,"imageIndex":28},{"imageOffset":24916,"symbol":"start","symbolLocation":2476,"imageIndex":32}]},{"id":7334397,"frames":[{"imageOffset":7456,"symbol":"start_wqthread","symbolLocation":0,"imageIndex":33}],"threadState":{"x":[{"value":6158102528},{"value":10503},{"value":6157565952},{"value":0},{"value":409604},{"value":18446744073709551615},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0}],"flavor":"ARM_THREAD_STATE64","lr":{"value":0},"cpsr":{"value":4096},"fp":{"value":0},"sp":{"value":6158102528},"esr":{"value":1442840704,"description":" Address size fault"},"pc":{"value":6930222368},"far":{"value":0}}},{"id":7334398,"name":"com.apple.NSEventThread","threadState":{"x":[{"value":268451845},{"value":21592279046},{"value":8589934592,"objc-selector":"rContactStoreChangeNotifications:"},{"value":185830349996032},{"value":0},{"value":185830349996032},{"value":2},{"value":4294967295},{"value":18446744073709550527},{"value":43267},{"value":0},{"value":1},{"value":43267},{"value":804260},{"value":0},{"value":0},{"value":18446744073709551569},{"value":8848402152},{"value":0},{"value":4294967295},{"value":2},{"value":185830349996032},{"value":0},{"value":185830349996032},{"value":6158671976},{"value":8589934592,"objc-selector":"rContactStoreChangeNotifications:"},{"value":21592279046},{"value":21592279046},{"value":4412409862}],"flavor":"ARM_THREAD_STATE64","lr":{"value":6930052580},"cpsr":{"value":4096},"fp":{"value":6158671824},"sp":{"value":6158671744},"esr":{"value":1442840704,"description":" Address size fault"},"pc":{"value":6929976820},"far":{"value":0}},"frames":[{"imageOffset":3572,"symbol":"mach_msg2_trap","symbolLocation":8,"imageIndex":34},{"imageOffset":79332,"symbol":"mach_msg2_internal","symbolLocation":80,"imageIndex":34},{"imageOffset":39364,"symbol":"mach_msg_overwrite","symbolLocation":476,"imageIndex":34},{"imageOffset":4472,"symbol":"mach_msg","symbolLocation":24,"imageIndex":34},{"imageOffset":517760,"symbol":"__CFRunLoopServiceMachPort","symbolLocation":160,"imageIndex":35},{"imageOffset":511812,"symbol":"__CFRunLoopRun","symbolLocation":1208,"imageIndex":35},{"imageOffset":508980,"symbol":"CFRunLoopRunSpecific","symbolLocation":608,"imageIndex":35},{"imageOffset":1458816,"symbol":"_NSEventThread","symbolLocation":144,"imageIndex":36},{"imageOffset":28564,"symbol":"_pthread_start","symbolLocation":136,"imageIndex":33},{"imageOffset":7476,"symbol":"thread_start","symbolLocation":8,"imageIndex":33}]}],
+  "usedImages" : [
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 6086541312,
+    "size" : 802816,
+    "uuid" : "5ffd4642-be84-381a-b446-ba520500c926",
+    "path" : "\/Users\/USER\/*\/libHistPainter.so",
+    "name" : "libHistPainter.so"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 6076579840,
+    "size" : 1425408,
+    "uuid" : "37ee73f9-1025-370b-9eda-8f8d10811c9b",
+    "path" : "\/Users\/USER\/*\/libASImage.so",
+    "name" : "libASImage.so"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 6074843136,
+    "size" : 376832,
+    "uuid" : "11616d15-8df9-3da2-aecf-0a54f1c1cae9",
+    "path" : "\/Users\/USER\/*\/libPostscript.so",
+    "name" : "libPostscript.so"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 5564809216,
+    "size" : 49152,
+    "uuid" : "7d6ca1cb-c5e6-38b6-9618-2c580486fc6b",
+    "path" : "\/usr\/lib\/libobjc-trampolines.dylib",
+    "name" : "libobjc-trampolines.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 6063980544,
+    "size" : 933888,
+    "uuid" : "37b357d9-63d9-37c0-a759-beab53053363",
+    "path" : "\/Users\/USER\/*\/libGCocoa.so",
+    "name" : "libGCocoa.so"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 6054035456,
+    "size" : 98304,
+    "uuid" : "b379b680-d62f-38f9-a4fd-70d244037ea9",
+    "path" : "\/Users\/USER\/*\/libGQuartz.so",
+    "name" : "libGQuartz.so"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 6079168512,
+    "size" : 2506752,
+    "uuid" : "027704f7-6f0e-3197-a409-7c93617507f4",
+    "path" : "\/Users\/USER\/*\/libGui.so",
+    "name" : "libGui.so"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 6053429248,
+    "size" : 376832,
+    "uuid" : "43a90627-e4b5-301f-b3f3-72858724031a",
+    "path" : "\/Users\/USER\/*\/libMinuit.so",
+    "name" : "libMinuit.so"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 6056574976,
+    "size" : 622592,
+    "uuid" : "9fd8db5d-15d2-3faf-8c21-17d40885f7f1",
+    "path" : "\/Users\/USER\/*\/libGpad.so",
+    "name" : "libGpad.so"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 6059868160,
+    "size" : 1425408,
+    "uuid" : "6b64c291-ca8b-32f7-8f0c-ad7284bcd12e",
+    "path" : "\/Users\/USER\/*\/libGraf.so",
+    "name" : "libGraf.so"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 6068453376,
+    "size" : 3407872,
+    "uuid" : "caa5efe9-7f94-3dd4-a584-9980fff0d136",
+    "path" : "\/Users\/USER\/*\/libHist.so",
+    "name" : "libHist.so"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 6057689088,
+    "size" : 1097728,
+    "uuid" : "dce7cd8f-753a-349b-882b-c9555ba0527e",
+    "path" : "\/Users\/USER\/*\/libMatrix.so",
+    "name" : "libMatrix.so"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 4378460160,
+    "size" : 49152,
+    "uuid" : "f07bf019-f9b0-39f5-a6a6-23f2fdc9501f",
+    "path" : "\/opt\/homebrew\/*\/libtbbmalloc.2.16.dylib",
+    "name" : "libtbbmalloc.2.16.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 5554536448,
+    "size" : 2326528,
+    "uuid" : "eac8a577-e42e-3e93-ab67-3cf986860a3a",
+    "path" : "\/Users\/USER\/*\/libMathCore.so",
+    "name" : "libMathCore.so"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 5549080576,
+    "size" : 131072,
+    "uuid" : "7332521c-a06f-35f0-bc1f-3291f01c9a7b",
+    "path" : "\/Users\/USER\/*\/libImt.so",
+    "name" : "libImt.so"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 4336123904,
+    "size" : 65536,
+    "uuid" : "89a8ca64-ca09-3b5a-84af-b8260b803a39",
+    "path" : "\/Users\/USER\/*\/libMultiProc.so",
+    "name" : "libMultiProc.so"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 5546246144,
+    "size" : 98304,
+    "uuid" : "f0392915-3f20-31a5-be96-44b24dbcc9a6",
+    "path" : "\/opt\/homebrew\/*\/libtbb.12.16.dylib",
+    "name" : "libtbb.12.16.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 5550424064,
+    "size" : 475136,
+    "uuid" : "a0350954-f8bb-36e4-96cf-ae56423107fe",
+    "path" : "\/Users\/USER\/*\/libNet.so",
+    "name" : "libNet.so"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 5551341568,
+    "size" : 606208,
+    "uuid" : "06428b1e-2519-35b4-8f5c-4f6c81b7737f",
+    "path" : "\/opt\/homebrew\/*\/libssl.3.dylib",
+    "name" : "libssl.3.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 5564891136,
+    "size" : 3407872,
+    "uuid" : "7062d2e1-27c3-33b2-9764-78464d239f63",
+    "path" : "\/opt\/homebrew\/*\/libcrypto.3.dylib",
+    "name" : "libcrypto.3.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 4445388800,
+    "size" : 71417856,
+    "uuid" : "d229a101-cb47-3d25-818b-358cdfc42ab2",
+    "path" : "\/Users\/USER\/*\/libCling.so",
+    "name" : "libCling.so"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 4336304128,
+    "size" : 3194880,
+    "uuid" : "9a1ee435-d846-360e-895f-9ccfa72905dd",
+    "path" : "\/Users\/USER\/*\/libRIO.so",
+    "name" : "libRIO.so"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 4311810048,
+    "size" : 245760,
+    "uuid" : "0dcb0adc-8b2e-39db-add5-272e531febdb",
+    "path" : "\/Users\/USER\/*\/libThread.so",
+    "name" : "libThread.so"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 4315922432,
+    "size" : 147456,
+    "uuid" : "aaf20579-8470-32ce-acb1-e4b620946be4",
+    "path" : "\/Users\/USER\/*\/libRint.so",
+    "name" : "libRint.so"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 4323147776,
+    "size" : 3457024,
+    "uuid" : "3b2a2650-8abe-343b-9d11-70dfe420b235",
+    "path" : "\/Users\/USER\/*\/libCore.so",
+    "name" : "libCore.so"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 4315709440,
+    "size" : 32768,
+    "uuid" : "a2911333-2515-3ee3-bf24-898591900a73",
+    "path" : "\/opt\/homebrew\/*\/libxxhash.0.8.3.dylib",
+    "name" : "libxxhash.0.8.3.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 4316413952,
+    "size" : 131072,
+    "uuid" : "88b25dd4-c1ab-3a03-86d7-2b1595bb49d1",
+    "path" : "\/opt\/homebrew\/*\/liblz4.1.10.0.dylib",
+    "name" : "liblz4.1.10.0.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 4317249536,
+    "size" : 573440,
+    "uuid" : "a101f9a2-32da-3484-ac68-4d3a5f26da31",
+    "path" : "\/opt\/homebrew\/*\/libzstd.1.5.7.dylib",
+    "name" : "libzstd.1.5.7.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 4311056384,
+    "size" : 16384,
+    "uuid" : "cd8b5ea6-e3f0-3750-b379-c48c32d91cb8",
+    "path" : "\/opt\/homebrew\/*\/root.exe",
+    "name" : "root.exe"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 7144435712,
+    "size" : 49152,
+    "uuid" : "40a5125b-1225-337b-9d1a-968356d29580",
+    "path" : "\/usr\/lib\/system\/libunwind.dylib",
+    "name" : "libunwind.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 6929858560,
+    "size" : 114684,
+    "uuid" : "68e3eb36-b4ba-30e0-a240-31e942936d06",
+    "path" : "\/usr\/lib\/libc++abi.dylib",
+    "name" : "libc++abi.dylib"
+  },
+  {
+    "size" : 0,
+    "source" : "A",
+    "base" : 0,
+    "uuid" : "00000000-0000-0000-0000-000000000000"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 6926503936,
+    "size" : 562440,
+    "uuid" : "f635824e-318b-3f0c-842c-c369737f2b68",
+    "path" : "\/usr\/lib\/dyld",
+    "name" : "dyld"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 6930214912,
+    "size" : 53248,
+    "uuid" : "e03e8478-6f5c-3d21-a79a-58408f514000",
+    "path" : "\/usr\/lib\/system\/libsystem_pthread.dylib",
+    "name" : "libsystem_pthread.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 6929973248,
+    "size" : 241660,
+    "uuid" : "71ff45b8-f14e-3666-9e96-6cf58315b91d",
+    "path" : "\/usr\/lib\/system\/libsystem_kernel.dylib",
+    "name" : "libsystem_kernel.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 6930640896,
+    "CFBundleShortVersionString" : "6.9",
+    "CFBundleIdentifier" : "com.apple.CoreFoundation",
+    "size" : 5083136,
+    "uuid" : "55720ee0-d8c3-33a1-9854-8e61a6f44895",
+    "path" : "\/System\/Library\/Frameworks\/CoreFoundation.framework\/Versions\/A\/CoreFoundation",
+    "name" : "CoreFoundation",
+    "CFBundleVersion" : "2602"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 6990024704,
+    "CFBundleShortVersionString" : "6.9",
+    "CFBundleIdentifier" : "com.apple.AppKit",
+    "size" : 20180992,
+    "uuid" : "7acbeef9-a453-3e4d-98ac-f9441d86e183",
+    "path" : "\/System\/Library\/Frameworks\/AppKit.framework\/Versions\/C\/AppKit",
+    "name" : "AppKit",
+    "CFBundleVersion" : "2487.70.105"
+  }
+],
+  "sharedCache" : {
+  "base" : 6925746176,
+  "size" : 4214358016,
+  "uuid" : "bb3df3d3-38bd-304c-9233-e43de95f1903"
+},
+  "vmSummary" : "ReadOnly portion of Libraries: Total=979.2M resident=0K(0%) swapped_out_or_unallocated=979.2M(100%)\nWritable regions: Total=2.4G written=0K(0%) resident=0K(0%) swapped_out=0K(0%) unallocated=2.4G(100%)\n\n                                VIRTUAL   REGION \nREGION TYPE                        SIZE    COUNT (non-coalesced) \n===========                     =======  ======= \nAccelerate framework               384K        3 \nActivity Tracing                   256K        1 \nCG image                          31.0M        7 \nCG raster data                    16.1M        6 \nColorSync                          528K       24 \nCoreGraphics                        48K        3 \nCoreGraphics (reserved)             16K        1         reserved VM address space (unallocated)\nFoundation                          16K        1 \nImage IO                            64K        1 \nKernel Alloc Once                   32K        1 \nMALLOC                             2.3G      155 \nMALLOC guard page                  192K       12 \nSTACK GUARD                       56.0M        3 \nStack                             9264K        3 \nVM_ALLOCATE                       24.0M      101 \n__AUTH                             973K      214 \n__AUTH_CONST                      16.1M      373 \n__CTF                               824        1 \n__DATA                            5627K      394 \n__DATA_CONST                      25.0M      403 \n__DATA_DIRTY                       924K      116 \n__FONT_DATA                          4K        1 \n__LINKEDIT                       569.3M       30 \n__OBJC_RO                         71.9M        2 \n__OBJC_RW                         2200K        1 \n__TEXT                           410.0M      416 \ndyld private memory                656K        4 \nmapped file                      524.9M      172 \nshared memory                      848K       14 \n===========                     =======  ======= \nTOTAL                              4.0G     2463 \nTOTAL, minus reserved VM space     4.0G     2463 \n",
+  "legacyInfo" : {
+  "threadTriggered" : {
+    "queue" : "com.apple.main-thread"
+  }
+},
+  "logWritingSignature" : "32234a06eba8239280e4a3911012916684807422",
+  "trialInfo" : {
+  "rollouts" : [
+    {
+      "rolloutId" : "60da5e84ab0ca017dace9abf",
+      "factorPackIds" : {
+
+      },
+      "deploymentId" : 240000008
+    },
+    {
+      "rolloutId" : "6425c75e4327780c10cc4252",
+      "factorPackIds" : {
+        "SIRI_HOME_AUTOMATION_INTENT_SELECTION_CACHE" : "642600a457e7664b1698eb32"
+      },
+      "deploymentId" : 240000004
+    }
+  ],
+  "experiments" : [
+
+  ]
+}
+}
+
+Model: MacBookPro18,3, BootROM 10151.140.19, proc 10:8:2 processors, 32 GB, SMC 
+Graphics: Apple M1 Pro, Apple M1 Pro, Built-In
+Display: Color LCD, 3024 x 1964 Retina, Main, MirrorOff, Online
+Display: LG IPS FULLHD, 1920 x 1080 (1080p FHD - Full High Definition), MirrorOff, Online
+Display: DELL P2422H, 1080 x 1920, MirrorOff, Online
+Memory Module: LPDDR5, Hynix
+AirPort: spairport_wireless_card_type_wifi (0x14E4, 0x4387), wl0: May 13 2024 23:59:32 version 20.103.15.0.8.7.175 FWID 01-fd39ee3a
+AirPort: 
+Bluetooth: Version (null), 0 services, 0 devices, 0 incoming serial ports
+Network Service: USB 10/100/1000 LAN, Ethernet, en4
+Network Service: Wi-Fi, AirPort, en0
+USB Device: USB31Bus
+USB Device: USB31Bus
+USB Device: USB3.0 Hub
+USB Device: USB2.0 Hub
+USB Device: USB-C Digital AV Multiport Adapter
+USB Device: USB31Bus
+Thunderbolt Bus: MacBook Pro, Apple Inc.
+Thunderbolt Bus: MacBook Pro, Apple Inc.
+Thunderbolt Bus: MacBook Pro, Apple Inc.
+

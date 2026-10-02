@@ -1,0 +1,15 @@
+{
+  "warning": "Diagnostic bin-center comparison only; not acceptance folded.",
+  "data_points": 15,
+  "baseline": {
+    "chi2": 665.4150724126358,
+    "ndof": 15
+  },
+  "constrained_dominant_resonance_fit": {
+    "constraint": "Lambda2100_scale^2 + Sigma2030_scale^2 = 2",
+    "Lambda2100_scale": 1.398043918843489,
+    "Sigma2030_scale": 0.21324446296384844,
+    "chi2": 42.963778797827665,
+    "ndof": 14
+  }
+}
