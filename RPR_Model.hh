@@ -14,8 +14,7 @@
 #include <utility>
 #include <vector>
 
-namespace rpr {
-
+using namespace clib;
 
 struct ModelParameters {
     // Particle masses in GeV.
@@ -56,6 +55,7 @@ struct ModelParameters {
     int loopCosThetaPoints = 10;
     int loopPhiPoints = 12;
     double mKStar = 0.89166;
+    bool HelicityBasis = 0; 
     Complex rescatteringScale = Complex(1.0,0.0);
     // Finite i*epsilon used for the secondary K/K* propagator poles.  The
     // paper does not publish its numerical pole prescription; 0.02 GeV^2
@@ -113,6 +113,10 @@ public:
         if (it == rescatterings_.end())
             throw std::invalid_argument("unknown rescattering channel: " + name);
         return it->second;
+    }
+
+    void SetHelicityBasis(bool enabled=true){
+        parameters_.HelicityBasis = enabled;
     }
 
     void EnableRescattering(bool enabled=true){
@@ -496,11 +500,19 @@ private:
         // So, sigma =  1./(64pi^2 s)*p_F/p_i Int |M|^2 dOmega =  (4*m1*m2)/(64pi^2 s)*p_F/p_i Int |M|^2 dOmega
         // Hence, the factor  should be (m1*m2)/(16pi^2 s)).
         if (k.pInitial == 0.0) return 0.0;
+        #if 0
         return parameters_.crossSectionNormalization
                * parameters_.mP * parameters_.mXi
                / (16.0*Pi*Pi*k.s)
                * k.pFinal/k.pInitial
                * GeV2ToMicrobarn;
+        #else
+        // Normalization is ubar u = 2sqrt(m1*m2)
+        return parameters_.crossSectionNormalization
+               / (64.0*Pi*Pi*k.s)
+               * k.pFinal/k.pInitial
+               * GeV2ToMicrobarn;
+        #endif
     }
 
     LabFrameKinematics GetLabFrameKinematics(double sqrtS) const;
@@ -553,105 +565,7 @@ private:
         const std::string* componentName) const;
 
     CMatrix2 ContributionAmplitude(const Resonance& r,
-                                   const Kinematics& k) const
-    {
-        const double coupling = r.isospin*r.gKN*r.gKXi;//isospin is the isospin factor I^mu_Y in Eq. (8)
-        CMatrix4 operator4 = CMatrix4::Zero();
-        Complex scalar = r.amplitudeScale*coupling;
-
-        if (r.channel == Channel::U && r.vertex == VertexType::Pseudovector) {
-            operator4 = Slash(k.k1)*Gamma5
-                        *(Slash(k.qU)+r.mass*Identity4)
-                        *Slash(k.k2)*Gamma5;
-            scalar /= (parameters_.mP+r.mass)*(parameters_.mXi+r.mass);
-        }
-        else if (r.channel == Channel::U
-                 && r.vertex == VertexType::HighSpinDerivative) {
-            if (std::abs(r.spin-1.5) > 1.0e-12)
-                throw std::invalid_argument("only spin-3/2 high-spin u-channel is implemented");
-            const CMatrix4 delta = ContractDelta3Half(k.k1, k.k2, k.qU, r.mass);
-            operator4 = (Slash(k.qU)+r.mass*Identity4)*delta
-                        / std::pow(parameters_.mK, 2);
-        }
-        else if (r.channel == Channel::S
-                 && r.vertex == VertexType::Pseudovector) {
-            operator4 = Slash(k.k2)*Gamma5
-                        *(Slash(k.qS)+r.mass*Identity4)
-                        *Slash(k.k1)*Gamma5;
-            scalar /= Complex(k.s-r.mass*r.mass, r.mass*r.width);
-            scalar /= (parameters_.mP+r.mass)*(parameters_.mXi+r.mass);
-            scalar *= std::pow(BornFormFactor(k.s, r.mass,
-                                              parameters_.bornN,
-                                              parameters_.bornCutoff),
-                               parameters_.formFactorPower);
-        }
-        else if (r.channel == Channel::S
-                 && r.vertex == VertexType::Pseudoscalar) {
-            // Optional J=1/2 state.  Parity changes the vertex, not the
-            // Dirac propagator. Overall i factors common to all diagrams are omitted.
-            const CMatrix4 vertexGamma = (r.parity > 0) ? Gamma5 : Identity4;
-            operator4 = vertexGamma*(Slash(k.qS)+r.mass*Identity4)*vertexGamma;
-            scalar /= Complex(k.s-r.mass*r.mass, r.mass*r.width);
-            scalar *= std::pow(ResonanceFormFactor(k.s, r.mass,
-                                                   parameters_.resonanceCutoff,
-                                                   parameters_.resonanceForm),
-                               parameters_.formFactorPower);
-        }
-        else if (r.channel == Channel::S
-                 && r.vertex == VertexType::HighSpinDerivative) {
-            const double projectorMass = parameters_.useSqrtSAsProjectorMass
-                                         ? k.sqrtS : r.mass;
-            if (std::abs(r.spin-1.5) < 1.0e-12) {
-                // Eq. (14): Gamma^(-P) for J=3/2.
-                const CMatrix4 vertexGamma =
-                    (r.parity > 0) ? Identity4 : Gamma5;
-                const CMatrix4 delta =
-                    ContractDelta3Half(k.k2, k.k1, k.qS, projectorMass);
-                operator4 = vertexGamma*(Slash(k.qS)+r.mass*Identity4)
-                            *delta*vertexGamma/std::pow(parameters_.mK, 2);
-            }
-            else if (std::abs(r.spin-2.5) < 1.0e-12) {
-                // Eq. (14): -Gamma^(P) for J=5/2.  The parity vertex is
-                // opposite to the J=3/2 and J=7/2 cases.
-                const CMatrix4 vertexGamma =
-                    (r.parity > 0) ? Gamma5 : Identity4;
-                const CMatrix4 delta =
-                    ContractDelta5Half(k.k2, k.k1, k.qS, projectorMass);
-                operator4 = -vertexGamma*(Slash(k.qS)+r.mass*Identity4)
-                            *delta*vertexGamma/std::pow(parameters_.mK, 4);
-            }
-            else if (std::abs(r.spin-3.5) < 1.0e-12) {
-                // Eq. (14): Gamma^(-P) for J=7/2.
-                const CMatrix4 vertexGamma =
-                    (r.parity > 0) ? Identity4 : Gamma5;
-                const CMatrix4 delta =
-                    ContractDelta7Half(k.k2, k.k1, k.qS, projectorMass);
-                operator4 = vertexGamma*(Slash(k.qS)+r.mass*Identity4)
-                            *delta*vertexGamma/std::pow(parameters_.mK, 6);
-            }
-            else {
-                throw std::invalid_argument(
-                    "high-spin s-channel must be spin 3/2, 5/2, or 7/2");
-            }
-            scalar /= Complex(k.s-r.mass*r.mass, r.mass*r.width);
-            scalar *= std::pow(ResonanceFormFactor(k.s, r.mass,
-                                                   parameters_.resonanceCutoff,
-                                                   parameters_.resonanceForm),
-                               parameters_.formFactorPower);
-        }
-        else {
-            throw std::invalid_argument("unsupported channel/vertex combination for " + r.name);
-        }
-
-        if (r.reggeized) {
-            const double spinOffset = r.spin;
-            scalar *= ReggeFactor(k.s, k.u, r.reggeIntercept, r.reggeSlope,
-                                  spinOffset, r.reggeEta,
-                                  parameters_.reggeS0,
-                                  parameters_.reggeCutoff);
-        }
-        return scalar*SpinMatrix(operator4, k, parameters_.mP, parameters_.mXi);
-    }
+                                   const Kinematics& k) const;
     
     
     // ==========Rescattering terms========== //
@@ -965,8 +879,10 @@ private:
                 result += polarPoint.second*phiWeight*angular;
             }
         }
-        return parameters_.projectRescatteringToFG ? ExtractAmplitudes(result).MatrixElement
-                                                   : result;
+        if(!parameters_.projectRescatteringToFG)
+            return result;
+        const Amplitudes fg = ExtractAmplitudes(result);
+        return (fg.f*Identity2 - I*fg.g*SigmaY).eval();
     }
 
     std::map<std::string,CMatrix2>
@@ -1130,8 +1046,8 @@ ModelResult RPRModel::MakeResult(const Kinematics& k,
     result.differentialCrossSection = phaseSpace*f2g2;
     result.polarization = (f2g2 == 0.0)
         ? 0.0
-        : 2.0*std::imag(std::conj(result.amplitudes.f)
-                        *result.amplitudes.g)/f2g2;
+        : 2.0*std::imag(result.amplitudes.f
+                        *std::conj(result.amplitudes.g))/f2g2;
     result.polarizedCrossSection =
         result.differentialCrossSection*result.polarization;
 
@@ -1143,6 +1059,115 @@ ModelResult RPRModel::MakeResult(const Kinematics& k,
     return result;
 }
 
-} // namespace rpr
+
+// The core part of this code:
+// Calculates the resonance contribution to the spin matrix for the given kinematics
+CMatrix2 RPRModel::ContributionAmplitude(const Resonance& r,
+                                const Kinematics& k) const
+    {
+        const double coupling = r.isospin*r.gKN*r.gKXi;//isospin is the isospin factor I^mu_Y in Eq. (8)
+        CMatrix4 operator4 = CMatrix4::Zero();
+        Complex scalar = r.amplitudeScale*coupling;
+
+        if (r.channel == Channel::U && r.vertex == VertexType::Pseudovector) {
+            operator4 = Slash(k.k1)*Gamma5
+                        *(Slash(k.qU)+r.mass*Identity4)
+                        *Slash(k.k2)*Gamma5;
+            scalar /= (parameters_.mP+r.mass)*(parameters_.mXi+r.mass);
+        }
+        else if (r.channel == Channel::U
+                 && r.vertex == VertexType::HighSpinDerivative) {
+            if (std::abs(r.spin-1.5) > 1.0e-12)
+                throw std::invalid_argument("only spin-3/2 high-spin u-channel is implemented");
+            const CMatrix4 delta = ContractDelta3Half(k.k1, k.k2, k.qU, r.mass);
+            operator4 = (Slash(k.qU)+r.mass*Identity4)*delta
+                        / std::pow(parameters_.mK, 2);
+        }
+        else if (r.channel == Channel::S
+                 && r.vertex == VertexType::Pseudovector) {
+            const CMatrix4 vertexGamma = (r.parity > 0) ? Gamma5 : Identity4;
+            operator4 = Slash(k.k2)*vertexGamma
+                        *(Slash(k.qS)+r.mass*Identity4)
+                        *Slash(k.k1)*vertexGamma;
+            //cout<<"s-channel, m = "<<r.mass<<", s = "<<k.s<< " " <<Complex(k.s-r.mass*r.mass, r.mass*r.width)<<endl;
+            scalar /= Complex(k.s-r.mass*r.mass, r.mass*r.width);
+            scalar /= (parameters_.mP+r.mass)*(parameters_.mXi+r.mass);
+            scalar *= std::pow(BornFormFactor(k.s, r.mass,
+                                              parameters_.bornN,
+                                              parameters_.bornCutoff),
+                               parameters_.formFactorPower);
+        }
+        else if (r.channel == Channel::S
+                 && r.vertex == VertexType::Pseudoscalar) {
+            // Optional J=1/2 state.  Parity changes the vertex, not the
+            // Dirac propagator. Overall i factors common to all diagrams are omitted.
+            const CMatrix4 vertexGamma = (r.parity > 0) ? Gamma5 : Identity4;
+            operator4 = vertexGamma*(Slash(k.qS)+r.mass*Identity4)*vertexGamma;
+            scalar /= Complex(k.s-r.mass*r.mass, r.mass*r.width);
+            scalar *= std::pow(ResonanceFormFactor(k.s, r.mass,
+                                                   parameters_.resonanceCutoff,
+                                                   parameters_.resonanceForm),
+                               parameters_.formFactorPower);
+        }
+        else if (r.channel == Channel::S
+                 && r.vertex == VertexType::HighSpinDerivative) {
+            const double projectorMass = parameters_.useSqrtSAsProjectorMass
+                                         ? k.sqrtS : r.mass;
+            if (std::abs(r.spin-1.5) < 1.0e-12) {
+                // Eq. (14): Gamma^(-P) for J=3/2.
+                const CMatrix4 vertexGamma =
+                    (r.parity > 0) ? Identity4 : Gamma5;
+                const CMatrix4 delta =
+                    ContractDelta3Half(k.k2, k.k1, k.qS, projectorMass);
+                operator4 = vertexGamma*(Slash(k.qS)+r.mass*Identity4)
+                            *delta*vertexGamma/std::pow(parameters_.mK, 2);
+            }
+            else if (std::abs(r.spin-2.5) < 1.0e-12) {
+                // Eq. (14): -Gamma^(P) for J=5/2.  The parity vertex is
+                // opposite to the J=3/2 and J=7/2 cases.
+                const CMatrix4 vertexGamma =
+                    (r.parity > 0) ? Gamma5 : Identity4;
+                const CMatrix4 delta =
+                    ContractDelta5Half(k.k2, k.k1, k.qS, projectorMass);
+                operator4 = -vertexGamma*(Slash(k.qS)+r.mass*Identity4)
+                            *delta*vertexGamma/std::pow(parameters_.mK, 4);
+            }
+            else if (std::abs(r.spin-3.5) < 1.0e-12) {
+                // Eq. (14): Gamma^(-P) for J=7/2.
+                const CMatrix4 vertexGamma =
+                    (r.parity > 0) ? Identity4 : Gamma5;
+                const CMatrix4 delta =
+                    ContractDelta7Half(k.k2, k.k1, k.qS, projectorMass);
+                operator4 = vertexGamma*(Slash(k.qS)+r.mass*Identity4)
+                            *delta*vertexGamma/std::pow(parameters_.mK, 6);
+            }
+            else {
+                throw std::invalid_argument(
+                    "high-spin s-channel must be spin 3/2, 5/2, or 7/2");
+            }
+            scalar /= Complex(k.s-r.mass*r.mass, r.mass*r.width);
+            scalar *= std::pow(ResonanceFormFactor(k.s, r.mass,
+                                                   parameters_.resonanceCutoff,
+                                                   parameters_.resonanceForm),
+                               parameters_.formFactorPower);
+        }
+        else {
+            throw std::invalid_argument("unsupported channel/vertex combination for " + r.name);
+        }
+
+        if (r.reggeized) {
+            const double spinOffset = r.spin;
+            scalar *= ReggeFactor(k.s, k.u, r.reggeIntercept, r.reggeSlope,
+                                  spinOffset, r.reggeEta,
+                                  parameters_.reggeS0,
+                                  parameters_.reggeCutoff);
+        }
+        else if (r.channel == Channel::U) {
+            scalar /= Complex(k.u-r.mass*r.mass, r.mass*r.width);
+        }
+        return parameters_.HelicityBasis?
+        scalar * RotateHelicity(SpinMatrix(operator4, k, parameters_.mP, parameters_.mXi),k.cosTheta):
+        scalar * SpinMatrix(operator4, k, parameters_.mP, parameters_.mXi);
+    }
 
 #endif

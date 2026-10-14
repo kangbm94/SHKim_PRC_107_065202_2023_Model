@@ -6,8 +6,7 @@
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
-
-namespace rpr {
+using namespace clib;
 inline constexpr double GeV2ToMicrobarn = 389.3793721;
 inline constexpr double Pi = 3.14159265358979323846;
 static std::vector<std::pair<double,double>>
@@ -153,12 +152,13 @@ inline CMatrix2 SpinMatrixBetween(const CMatrix4& operator4,
 inline double BornFormFactor(double s, double mass,
                              double n, double cutoff)
 {
-    const double numerator = n * std::pow(cutoff, 4);
+    const double numerator =  std::pow(2.0* cutoff, 4);
     const double base = numerator / (numerator + std::pow(s-mass*mass, 2));
-    return std::pow(base, n);
+    return std::pow(base, 2*n);
 }
 
 enum class ResonanceForm { PaperLiteral, GaussianSquared };
+
 
 inline double ResonanceFormFactor(double s, double mass, double cutoff,
                                   ResonanceForm form)
@@ -202,11 +202,11 @@ inline Amplitudes ExtractAmplitudes(const CMatrix2& matrix)
 {
     Amplitudes result;
     result.f = 0.5*(matrix(0,0)+matrix(1,1));
-    result.g = 0.5*(matrix(1,0)-matrix(0,1));
+    result.g = 0.5*(-matrix(1,0) + matrix(0,1));
     result.MatrixElement = matrix;
     result.fIntensity = std::norm(result.f);
     result.gIntensity = std::norm(result.g);
-    result.fConjugateG = std::conj(result.f) * result.g;
+    result.fConjugateG = result.f * conj(result.g);
     return result;
 }
 
@@ -248,6 +248,18 @@ static double CosThetaUpperBound(double thetaFirstDeg,
     return std::max(std::cos(thetaFirstDeg*Pi/180.0),
                     std::cos(thetaSecondDeg*Pi/180.0));
 }
-} // namespace rpr
+
+inline CMatrix2 RotateHelicity(const CMatrix2& matrix, double cth)
+{
+    double c = sqrt(0.5*(1.0+cth));
+    double s = sqrt(0.5*(1.0-cth)); 
+    CMatrix2 R_initial;
+    R_initial << 0. , 1.,
+                -1., 0.;
+    CMatrix2 R_final;
+    R_final << s, c,
+              -c, s;
+    return (R_final.adjoint() * matrix * R_initial);
+}
 
 #endif

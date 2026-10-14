@@ -1,5 +1,6 @@
-#include "../../Include/Dir.hh"
+#include "../Include/Dir.hh"
 #include "FitE42.hh"
+#define ModelConfig 1 // 0 -> Default, 1 -> PolaFit, 2 -> L2110
 std::vector<E42Point> gE42Data;
 std::vector<ForwardPoint> gForwardData;
 double gChi2Pol = 0.0;
@@ -8,26 +9,11 @@ double gChi2 = 0.0;
 int gnpointsPol = 0;
 int gnpointsForward = 0;
 int gnpoints = 0;
+bool HelicityBasis = 0;
 double crosssection_min = 10;
+figdir = "figs_norm/";
 constexpr int kForwardFitIntervals = 16;
-constexpr double kNodes[12] = {
-    -0.9815606342467192, -0.9041172563704749,
-    -0.7699026741943047, -0.5873179542866175,
-    -0.3678314989981802, -0.1252334085114689,
-     0.1252334085114689,  0.3678314989981802,
-     0.5873179542866175,  0.7699026741943047,
-     0.9041172563704749,  0.9815606342467192
-};
-constexpr double kWeights[12] = {
-    0.0471753363865118, 0.1069393259953184,
-    0.1600783285433462, 0.2031674267230659,
-    0.2334925365383548, 0.2491470458134029,
-    0.2491470458134029, 0.2334925365383548,
-    0.2031674267230659, 0.1600783285433462,
-    0.1069393259953184, 0.0471753363865118
-};
-std::vector<E42Point> LoadE42Data(const std::string& filename)
-{
+std::vector<E42Point> LoadE42Data(const std::string& filename){
     std::ifstream input(filename);
     if (!input) throw std::runtime_error("Cannot open " + filename);
     std::vector<E42Point> result;
@@ -47,8 +33,7 @@ std::vector<E42Point> LoadE42Data(const std::string& filename)
     return result;
 }
 
-std::vector<ForwardPoint> LoadForwardData(const std::string& filename)
-{
+std::vector<ForwardPoint> LoadForwardData(const std::string& filename){
     std::ifstream input(filename);
     if (!input) throw std::runtime_error("Cannot open " + filename);
     std::vector<ForwardPoint> result;
@@ -75,6 +60,7 @@ constexpr std::array<std::array<double,2>,4> kAngularBins = {{
     {{0.85, 0.90}}, {{0.90, 0.97}}, {{0.97, 1.00}}, {{0.85, 1.00}}
 }};
 void ConfigureModel(RPRModel& model){
+    cout<<"Configuring model..."<<endl;
     model.SetEnabled("Sigma2230", 0);
     auto& sigma2030 = model.Get("Sigma2030");
     sigma2030.amplitudeScale = Complex(0.55, 0.0);
@@ -83,6 +69,29 @@ void ConfigureModel(RPRModel& model){
     auto& lambda2100 = model.Get("Lambda2100");
     lambda2100.mass = 2.090;
     lambda2100.width = 0.150;
+}
+void ConfigureModelLambda2110(RPRModel& model){
+    model.SetEnabled("Sigma2230", 0);
+    cout<<"Configuring L2110 model..."<<endl;
+    model.SetEnabled("Sigma2230", 0);
+    #if 1
+    auto& sigma2030 = model.Get("Sigma2030");
+//    sigma2030.amplitudeScale = Complex(0.641964, 0.0);
+    sigma2030.mass = 2.040;
+    sigma2030.width = 0.200;
+    auto& lambda2100 = model.Get("Lambda2100");
+//    lambda2100.amplitudeScale = Complex(0.90001, 0.0);
+    lambda2100.mass = 2.090;
+    lambda2100.width = 0.150;
+    #endif
+    Resonance lambda2110 = {"Lambda2110", "Lambda", Channel::S, VertexType::HighSpinDerivative,
+         2.5, 1, 2.110, 0.200, 1. , 1. , -1.0,
+         false, 0.0, 0.0, 1.0, true, Complex(1,0.0)};
+    lambda2110.mass = 2.050;
+    lambda2110.width = 0.200;
+    //lambda2110.amplitudeScale = Complex(-2.38519, 0.0);
+    lambda2110.amplitudeScale = Complex(2.38519, 0.0);
+    model.AddResonance(lambda2110);
 }
 string GetKey(const std::string& component,int flip_nonflip, int real_imag,   double cosThetaLow, double cosThetaHigh){
     string key = "";
@@ -170,7 +179,6 @@ double AveragePolarization(RPRModel& model, double sqrtS,
 }
 void DrawWithData(RPRModel& model,
                     const std::vector<ForwardPoint>& forwardData){
-                    //const std::vector<DifferentialDataset>& differentialData){
     auto* canvasPol = new TCanvas("canvasPol", "canvasPol", 2000, 1000);
     auto* frameP = gPad->DrawFrame(1.9, -1.05, 2.4, 1.05);
     frameP->SetTitle(";#sqrt{s} [GeV];P_{#Xi}");
@@ -218,7 +226,7 @@ void DrawWithData(RPRModel& model,
         polarizationCurves.push_back(curve);
     }
     legendP->Draw();
-    canvasPol->SaveAs("figs/Polarization_wData.pdf");
+    canvasPol->SaveAs(figdir + "Polarization_wData.pdf");
     TCanvas* canvasCrossSection = new TCanvas("canvasCrossSection", "canvasCrossSection", 2000, 1000);
     canvasCrossSection->cd();
     TString forwardTitle = "p_{K^{-}}^{lab} [GeV/c];d#sigma/d#Omega_{lab} [#mub/sr]";
@@ -233,9 +241,12 @@ void DrawWithData(RPRModel& model,
     }
     constexpr double mK = 0.493677;
     constexpr double mP = 0.9382720813;
+    ofstream ForwardCrossSection(figdir + "forward_curve.dat");
+    ForwardCrossSection<<"#sqrtS [GeV]  dSigma/dOmega [microbarn/sr]"<<endl;
     for (double pLab = 1.15; pLab <= 2.72; pLab += 0.015) {
         const double eK = std::sqrt(pLab*pLab + mK*mK);
         const double sqrtS = std::sqrt(mK*mK + mP*mP + 2.0*mP*eK);
+        int ic = 0;
         for (auto& curve : forwardCurves) {
             const double prediction = curve.style.fullSum
                 ? model.AverageDifferentialCrossSectionLabTheta(
@@ -246,6 +257,8 @@ void DrawWithData(RPRModel& model,
             //curve.graph->SetPoint(curve.graph->GetN(), pLab, prediction);
             curve.graph->SetPoint(curve.graph->GetN(), sqrtS, prediction);
             forwardMaximum = std::max(forwardMaximum, prediction);
+            if(ic == 0) ForwardCrossSection<<sqrtS<<"  "<<prediction<<endl;
+            ic++;
         }
     }
     for (const auto& point : forwardData) {
@@ -285,22 +298,331 @@ void DrawWithData(RPRModel& model,
     legendX->Draw();
     gnpoints = gnpointsPol + gnpointsForward;
     gChi2 = gChi2Pol + gChi2Forward;
-    canvasCrossSection->SaveAs("figs/CrossSection_wData.pdf");
+    canvasCrossSection->SaveAs(figdir + "CrossSection_wData.pdf");
 
 }
+void DrawWithTheory(RPRModel& model){
+    vector<TString> components = 
+    {
+        "s_lambda", "s_sigma", "u_lambda", "u_sigma", "u_sigma1385",
+        "Lambda2100", "Sigma2030", "Sigma2250", "Lambda1890", "total"
+    };
+    vector<double> angle_bin = {0.97, 1.00};
+    vector<TString> NF_F = {"nonflip", "flip"};
+    vector<TString> Re_Im = {"real", "imag"};
+    map<TString, TGraph*> Graphs_Local;
+    auto key = [](TString component, TString f_nf, TString r_i){
+        TString val = f_nf + "_" + component + "_" + r_i;
+        return val;
+    };
+    double scale_factor = 1.;
+    double s_min = 1.83, s_max = 2.61, ds = 0.01;
+    for(const auto& component : components){
+        for(const auto& flip_nonflip : NF_F){
+            for(const auto& real_imag : Re_Im){
+                TString graph_key = key(component, flip_nonflip, real_imag);
+                Graphs_Local[graph_key] = new TGraph();
+                Graphs_Local[graph_key] -> SetLineWidth(3);
+                int color = flip_nonflip == "nonflip" ? kBlue : kRed;
+                int style = real_imag == "real" ? kSolid : kDashed;
+                Graphs_Local[graph_key]->SetLineColor(color);
+                Graphs_Local[graph_key]->SetLineStyle(style);
+                for(double sqrtS = s_min; sqrtS <= s_max; sqrtS += ds){
+                    double cth_low = angle_bin[0], cth_high = angle_bin[1];
+                    auto amplitude = GetAmplitudes(model, sqrtS, cth_low, cth_high, component);
+                    double value = 0.0;
+                    if(flip_nonflip == "nonflip" and real_imag == "real") value = amplitude.f.real();
+                    else if(flip_nonflip == "nonflip" and real_imag == "imag") value = amplitude.f.imag();
+                    else if(flip_nonflip == "flip" and real_imag == "real") value = amplitude.g.real();
+                    else if(flip_nonflip == "flip" and real_imag == "imag") value = amplitude.g.imag();
+                    Graphs_Local[graph_key]->SetPoint(Graphs_Local[graph_key]->GetN(), sqrtS, value*scale_factor);
+                }
+            }
+        }
+    }
+
+    TString dat_dir = "KN-KXi_data/";
+    vector<TString> components_SHKim = 
+    {
+        "schL", "schS", "uchL", "uchS", "uchSs",
+        "L2100", "S2030", "S2250", "L1890", "full"
+    };
+    map<TString, TString> components_map = {
+        {"schL", "s_lambda"}, {"schS", "s_sigma"}, {"uchL", "u_lambda"}, {"uchS", "u_sigma"},
+        {"uchSs", "u_sigma1385"}, {"L2100", "Lambda2100"}, {"S2030", "Sigma2030"},
+        {"S2250", "Sigma2250"}, {"L1890", "Lambda1890"}, {"full", "total"}
+    };
+    auto key_shkim = [] (TString f_nf, TString r_i, TString component){
+        TString val = f_nf + "_" + r_i + "/" + "PLab-Py_"+component + ".dat";
+        return val;
+    };
+    map<TString, TGraph*> Graphs_SHKim;
+    for(const auto& flip_nonflip : NF_F){
+        for(const auto& real_imag : Re_Im){
+            for(const auto& component : components_SHKim){
+                TString graph_key = key(component, flip_nonflip, real_imag);
+                Graphs_SHKim[graph_key] = new TGraph();
+                Graphs_SHKim[graph_key]->SetLineWidth(2);
+                int color = flip_nonflip == "nonflip" ? kBlue + 3 : kRed + 3;
+                int style = real_imag == "real" ? kSolid : kDashed;
+                Graphs_SHKim[graph_key]->SetLineColor(color);
+                Graphs_SHKim[graph_key]->SetLineStyle(style);
+                if(component == "L1890") continue;
+                TString file_name = key_shkim(flip_nonflip, real_imag, component);
+                ifstream input(dat_dir + file_name);
+                if(!input) throw runtime_error("Cannot open "+dat_dir+file_name);
+                string line;
+                while(getline(input, line)){
+                    if(line.empty() or line[0] == '#') continue;
+                    istringstream row(line);
+                    double sqrtS, value;
+                    if(!(row >> sqrtS >> value)) continue;
+                    Graphs_SHKim[graph_key]->SetPoint(Graphs_SHKim[graph_key]->GetN(), sqrtS, value);
+                }
+            }
+            TString graph_total_key = key("full", flip_nonflip, real_imag);
+            TString graph_L1890_key = key("L1890", flip_nonflip, real_imag);
+            for(int ip = 0; ip < Graphs_SHKim[graph_total_key]->GetN(); ++ip){
+                double sqrtS, value;
+                Graphs_SHKim[graph_total_key]->GetPoint(ip, sqrtS, value);
+                for(const auto& component : components_SHKim){
+                    if(component == "full") continue;
+                    if(component == "L1890") continue;
+                    TString graph_key = key(component, flip_nonflip, real_imag);
+                    double value_component = Graphs_SHKim[graph_key]->Eval(sqrtS);
+                    value -= value_component;
+                }
+                Graphs_SHKim[graph_L1890_key]->SetPoint(ip, sqrtS, value);
+            }
+        }
+    }
+    gSystem->mkdir(figdir + "Components_Comparison/", true);
+    gSystem->mkdir(figdir + "Components_Comparison/DatFiles/", true);
+    for(auto comp_map: components_map){
+        TString component_SHKim = comp_map.first;
+        TString component_local = comp_map.second;
+        TString ct = Form("Amplitude_%s", component_local.Data());
+        TCanvas* canvas = new TCanvas(ct,ct, 2000, 1000);
+        TLegend* legend = new TLegend(0.55, 0.75, 0.85, 0.89);
+        legend->SetBorderSize(0);
+        legend->SetFillStyle(0);
+        gPad->SetGrid();
+        gPad->SetLeftMargin(0.15);
+        gPad->SetBottomMargin(0.15);
+        gPad->SetRightMargin(0.05);
+        gPad->SetTopMargin(0.05);
+        double y_min = 99990.0, y_max = -99990.0, y_range = 0.0;
+        for(const auto& flip_nonflip : NF_F){
+            for(const auto& real_imag : Re_Im){
+                if(real_imag == "real"){
+                    legend->AddEntry(Graphs_Local[key(component_local, flip_nonflip, real_imag)],
+                     Form("KBM_%s",flip_nonflip.Data()), "l");
+                    legend->AddEntry(Graphs_SHKim[key(component_SHKim, flip_nonflip, real_imag)],
+                        Form("SHKim_%s",flip_nonflip.Data()), "l");
+                }
+                TString graph_key_local = key(component_local, flip_nonflip, real_imag);
+                TString graph_key_SHKim = key(component_SHKim, flip_nonflip, real_imag);
+                TGraph* graph_local = Graphs_Local[graph_key_local];
+                TGraph* graph_SHKim = Graphs_SHKim[graph_key_SHKim];
+                for(int ip = 0; ip < graph_local->GetN(); ++ip){
+                    double sqrtS, value;
+                    graph_local->GetPoint(ip, sqrtS, value);
+                    y_min = std::min(y_min, value);
+                    y_max = std::max(y_max, value);
+                }
+                for(int ip = 0; ip < graph_SHKim->GetN(); ++ip){
+                    double sqrtS, value;
+                    graph_SHKim->GetPoint(ip, sqrtS, value);
+                    y_min = std::min(y_min, value);
+                    y_max = std::max(y_max, value);
+                }
+                y_range = y_max - y_min;
+            }
+        }
+        gPad->DrawFrame(1.83, y_min - 0.1*y_range, 2.61, y_max + 0.1*y_range);
+        for(const auto& flip_nonflip : NF_F){
+            for(const auto& real_imag : Re_Im){
+                TString graph_key_local = key(component_local, flip_nonflip, real_imag);
+                TString graph_key_SHKim = key(component_SHKim, flip_nonflip, real_imag);
+                TGraph* graph_local = Graphs_Local[graph_key_local];
+                TGraph* graph_SHKim = Graphs_SHKim[graph_key_SHKim];
+                graph_local->Draw("L SAME");
+                graph_SHKim->Draw("L SAME");
+            }
+        }
+        legend->Draw();
+        canvas->SaveAs(figdir + "Components_Comparison/" + Form("/Amplitude_%s.pdf", component_local.Data()));
+        if(component_local == "s_lambda" or component_local == "s_sigma"){
+            TCanvas* canvas_local = new TCanvas(ct+"_local",ct+"_local", 2000, 1000);
+            gPad->SetGrid();
+            gPad->SetLeftMargin(0.15);
+            gPad->SetBottomMargin(0.15);
+            gPad->SetRightMargin(0.05);
+            gPad->SetTopMargin(0.05);
+            double y_min = 9999, y_max = -9999, y_range = 0.0;
+            for(const auto& flip_nonflip : NF_F){
+                for(const auto& real_imag : Re_Im){
+                    TString graph_key_local = key(component_local, flip_nonflip, real_imag);
+                    TGraph* graph_local = Graphs_Local[graph_key_local];
+                    for(int ip = 0; ip < graph_local->GetN(); ++ip){
+                        double sqrtS, value;
+                        graph_local->GetPoint(ip, sqrtS, value);
+                        y_min = std::min(y_min, value);
+                        y_max = std::max(y_max, value);   
+                    }
+                }
+            }
+            gPad->DrawFrame(1.83, y_min - 0.1*y_range, 2.61, y_max + 0.1*y_range);
+            for(const auto& flip_nonflip : NF_F){
+                for(const auto& real_imag : Re_Im){
+                    TString graph_key_local = key(component_local, flip_nonflip, real_imag);
+                    TGraph* graph_local = Graphs_Local[graph_key_local];
+                    graph_local->Draw("L SAME");  
+                }
+            }
+            canvas_local->SaveAs(figdir + "Components_Comparison/" + Form("/Amplitude_%s_local.pdf", component_local.Data()));
+        }
+        ofstream outfile_local(figdir + "Components_Comparison/DatFiles/KBM_" + component_local + ".dat");
+        outfile_local<<"# sqrtS [GeV]  f_real  f_imag  g_real  g_imag"<<endl;
+        ofstream outfile_shkim(figdir + "Components_Comparison/DatFiles/SHKim_" + component_local + ".dat");
+        outfile_shkim<<"# sqrtS [GeV]  f_real  f_imag  g_real  g_imag"<<endl;
+        for(double sqrtS = s_min; sqrtS <= s_max; sqrtS += ds){
+            double f_real_local = Graphs_Local[key(component_local, "nonflip", "real")]->Eval(sqrtS);
+            double f_imag_local = Graphs_Local[key(component_local, "nonflip", "imag")]->Eval(sqrtS);
+            double g_real_local = Graphs_Local[key(component_local, "flip", "real")]->Eval(sqrtS);
+            double g_imag_local = Graphs_Local[key(component_local, "flip", "imag")]->Eval(sqrtS);
+            outfile_local<<sqrtS<<" "<<f_real_local<<" "<<f_imag_local<<" "<<g_real_local<<" "<<g_imag_local<<endl;
+            double f_real_shkim = Graphs_SHKim[key(component_SHKim, "nonflip", "real")]->Eval(sqrtS);
+            double f_imag_shkim = Graphs_SHKim[key(component_SHKim, "nonflip", "imag")]->Eval(sqrtS);
+            double g_real_shkim = Graphs_SHKim[key(component_SHKim, "flip", "real")]->Eval(sqrtS);
+            double g_imag_shkim = Graphs_SHKim[key(component_SHKim, "flip", "imag")]->Eval(sqrtS);
+            outfile_shkim<<sqrtS<<" "<<f_real_shkim<<" "<<f_imag_shkim<<" "<<g_real_shkim<<" "<<g_imag_shkim<<endl;
+        }
+    }
+}
+void DrawAngularComponents(RPRModel& model, double sqrtS){
+    vector<TString> components = 
+    {
+        "s_lambda", "s_sigma", "u_lambda", "u_sigma", "u_sigma1385",
+        "Lambda2100", "Sigma2030", "Sigma2250", "Lambda1890"
+    };
+    vector<TString> NF_F = {"nonflip", "flip"};
+    vector<TString> Re_Im = {"real", "imag"};
+    map<TString, TGraph*> Graphs_Local;
+    auto key = [](TString component, TString f_nf, TString r_i){
+        TString val = f_nf + "_" + component + "_" + r_i;
+        return val;
+    };
+    double cth_min = -1.0, cth_max = 1.0, dcth = 0.01;
+    for(const auto& component : components){
+        for(const auto& flip_nonflip : NF_F){
+            for(const auto& real_imag : Re_Im){
+                TString graph_key = key(component, flip_nonflip, real_imag);
+                Graphs_Local[graph_key] = new TGraph();
+                Graphs_Local[graph_key] -> SetLineWidth(3);
+                int color = flip_nonflip == "nonflip" ? kBlue : kRed;
+                int style = real_imag == "real" ? kSolid : kDashed;
+                Graphs_Local[graph_key]->SetLineColor(color);
+                Graphs_Local[graph_key]->SetLineStyle(style);
+                for(double cth = cth_min; cth <= cth_max; cth += dcth){
+                    auto amplitude = GetAmplitudes(model, sqrtS, cth,component);
+                    double value = 0.0;
+                    if(flip_nonflip == "nonflip" and real_imag == "real") value = amplitude.f.real();
+                    else if(flip_nonflip == "nonflip" and real_imag == "imag") value = amplitude.f.imag();
+                    else if(flip_nonflip == "flip" and real_imag == "real") value = amplitude.g.real();
+                    else if(flip_nonflip == "flip" and real_imag == "imag") value = amplitude.g.imag();
+                    Graphs_Local[graph_key]->SetPoint(Graphs_Local[graph_key]->GetN(), cth, value);
+                }
+            }
+        }
+    }
+    gSystem->mkdir(figdir + "Angular/", true);
+    gSystem->mkdir(figdir + "Angular/DatFiles/", true);
+    for(const auto& component : components){
+        TString ct = Form("Angular_%s", component.Data());
+        TCanvas* canvas = new TCanvas(ct,ct, 2000, 1000);
+        TLegend* legend = new TLegend(0.55, 0.75, 0.85, 0.89);
+        legend->SetBorderSize(0);
+        legend->SetFillStyle(0);
+        gPad->SetGrid();
+        gPad->SetLeftMargin(0.15);
+        gPad->SetBottomMargin(0.15);
+        gPad->SetRightMargin(0.05);
+        gPad->SetTopMargin(0.05);
+        double y_min = 99990.0, y_max = -99990.0, y_range = 0.0;
+        ofstream outfile_angular(figdir + "Angular/DatFiles/Angular_" + component + ".dat");
+        outfile_angular<<"# cosTheta  f_real  f_imag  g_real  g_imag"<<endl;
+        for(double cth = cth_min; cth <= cth_max; cth += dcth){
+            double f_real = Graphs_Local[key(component, "nonflip", "real")]->Eval(cth);
+            double f_imag = Graphs_Local[key(component, "nonflip", "imag")]->Eval(cth);
+            double g_real = Graphs_Local[key(component, "flip", "real")]->Eval(cth);
+            double g_imag = Graphs_Local[key(component, "flip", "imag")]->Eval(cth);
+            outfile_angular<<cth<<" "<<f_real<<" "<<f_imag<<" "<<g_real<<" "<<g_imag<<endl;
+        }
+        for(const auto& flip_nonflip : NF_F){
+            for(const auto& real_imag : Re_Im){
+                TString graph_key_local = key(component, flip_nonflip, real_imag);
+                TGraph* graph_local = Graphs_Local[graph_key_local];
+                for(int ip = 0; ip < graph_local->GetN(); ++ip){
+                    double cth, value;
+                    graph_local->GetPoint(ip, cth, value);
+                    y_min = std::min(y_min, value);
+                    y_max = std::max(y_max, value);   
+                }
+                y_range = y_max - y_min;
+            }
+        }
+        gPad->DrawFrame(-1.0, y_min - 0.1*y_range, 1.0, y_max + 0.1*y_range);
+        for(const auto& flip_nonflip : NF_F){
+            for(const auto& real_imag : Re_Im){
+                TString graph_key_local = key(component, flip_nonflip, real_imag);
+                TGraph* graph_local = Graphs_Local[graph_key_local];
+                graph_local->Draw("L SAME"); 
+                legend->AddEntry(graph_local, Form("%s %s", flip_nonflip.Data(), real_imag.Data()), "l"); 
+            }
+        }
+        legend->Draw();
+        canvas->SaveAs(figdir + "Angular/" + Form("/Angular_%s.pdf", component.Data()));
+    }
+}
+
+
 void DrawComponents(){
     SetPaperStyle();
-    TString figdir = "figs/";
+    cout<<"Drawing components..."<<endl;
+#if ModelConfig == 0
+    figdir ="figs/Default/";
+#elif ModelConfig == 1
+    figdir ="figs/PolaFit/";
+#elif ModelConfig == 2:
+    figdir ="figs/Lambda2110_Inv/";
+#endif
     gSystem->mkdir(figdir, true);
     RPRModel model;
+    if(HelicityBasis){
+        model.SetHelicityBasis(1);
+        figdir ="figs/PolaFit_HelicityBasis/";
+    }
+#if ModelConfig == 0
+#elif ModelConfig == 1
     ConfigureModel(model);
+#elif ModelConfig == 2
+    ConfigureModelLambda2110(model);
+#endif
+    cout<<"Model configured."<<endl;
+    cout<<"Drawing with theory..."<<endl;
+    DrawWithTheory(model);
+    DrawAngularComponents(model, 2.3);
+    cout<<"Done drawing components."<<endl;
     vector<std::string> components = {
-        "total", "born_term", "uch_regge", "Sigma2030", "Lambda2100", "Sigma2250","Lambda1890"
+        "total", "uch_regge", "Sigma2030", "Lambda2100", "Sigma2250","Lambda1890", "s_lambda", "s_sigma"
+        //"total", "uch_regge", "Sigma2030", "Lambda2100", "Sigma2250"
+        //"total", "Sigma2030", "Lambda2100", "Sigma2250"
     };
+    #if ModelConfig == 2
+    components.push_back("Lambda2110");
+    #endif
     vector<array<string,2>> fg_combi = {
- //       {"born_term", "Sigma2030"},
- //       {"born_term", "Lambda2100"},
- //       {"born_term", "Sigma2250"},
         {"total", "total"},
         {"uch_regge", "Sigma2030"},
         {"uch_regge", "Lambda2100"},
@@ -319,11 +641,14 @@ void DrawComponents(){
     double sqrtS_low = 1.83, sqrtS_high = 2.61, dS = 0.01;
     #if 1
     for(const auto& bin : angularBins){
-        ofstream F_Real(figdir + Form("nonflip_real_total_cth_%g_%g.dat", bin[0]*100, bin[1]*100));
-        ofstream F_Imag(figdir + Form("nonflip_imag_total_cth_%g_%g.dat", bin[0]*100, bin[1]*100));
-        ofstream G_Real(figdir + Form("flip_real_total_cth_%g_%g.dat", bin[0]*100, bin[1]*100));
-        ofstream G_Imag(figdir + Form("flip_imag_total_cth_%g_%g.dat", bin[0]*100, bin[1]*100));
+        cout<<"Processing angular bin: "<<bin[0]<<" < cosTheta < "<<bin[1]<<endl;
         for(std::size_t ic = 0; ic < components.size(); ++ic){
+            gSystem->mkdir(figdir +Form("Amplitudes/%s/",components[ic].c_str()), true);
+            ofstream FComp_Real(figdir +Form("Amplitudes/%s/",components[ic].c_str())+ Form("nonflip_real_%s_cth_%g_%g.dat", components[ic].c_str(),bin[0]*100, bin[1]*100));
+            ofstream FComp_Imag(figdir +Form("Amplitudes/%s/",components[ic].c_str())+ Form("nonflip_imag_%s_cth_%g_%g.dat", components[ic].c_str(),bin[0]*100, bin[1]*100));
+            ofstream GComp_Real(figdir +Form("Amplitudes/%s/",components[ic].c_str())+ Form("flip_real_%s_cth_%g_%g.dat", components[ic].c_str(),bin[0]*100, bin[1]*100));
+            ofstream GComp_Imag(figdir +Form("Amplitudes/%s/",components[ic].c_str())+ Form("flip_imag_%s_cth_%g_%g.dat", components[ic].c_str(),bin[0]*100, bin[1]*100));
+            cout<<"Processing component: "<<components[ic]<<endl;
             const auto& component = components[ic];
             double cosThetaLow = bin[0], cosThetaHigh = bin[1];
             string key = GetKey(component, 0, 0, cosThetaLow, cosThetaHigh);
@@ -348,10 +673,10 @@ void DrawComponents(){
             for(double sqrtS_0 = sqrtS_low; sqrtS_0 <= sqrtS_high; sqrtS_0 += dS){
                 double sqrtS = sqrtS_0 + dS < sqrtS_high ?
                 sqrtS_0 + 0.5*dS : 0.5*(sqrtS_0 + sqrtS_high);
-                is++;
                 if(is%10 == 0){
                     cout << "Processing sqrtS = " << sqrtS << " GeV for component " << component << endl;
                 }
+                is++;
                 const auto amplitudes = GetAmplitudes(
                     model, sqrtS, cosThetaLow, cosThetaHigh, &component);
                 string key = GetKey(component, 0, 0, cosThetaLow, cosThetaHigh);
@@ -362,14 +687,12 @@ void DrawComponents(){
                 Graphs[key]->SetPoint(Graphs[key]->GetN(), sqrtS, amplitudes.g.real());
                 key = GetKey(component, 1, 1, cosThetaLow, cosThetaHigh);
                 Graphs[key]->SetPoint(Graphs[key]->GetN(), sqrtS, amplitudes.g.imag());
-                if(component == "total"){
-                    double ampl = amplitudes.fIntensity + amplitudes.gIntensity;
-                    ampl = sqrt(ampl);
-                    F_Real << sqrtS << " " << amplitudes.f.real() << endl;
-                    F_Imag << sqrtS << " " << amplitudes.f.imag() << endl;
-                    G_Real << sqrtS << " " << amplitudes.g.real() << endl;
-                    G_Imag << sqrtS << " " << amplitudes.g.imag() << endl;
-                }
+                double ampl = amplitudes.fIntensity + amplitudes.gIntensity;
+                ampl = sqrt(ampl);
+                FComp_Real << sqrtS << " " << amplitudes.f.real() << endl;
+                FComp_Imag << sqrtS << " " << amplitudes.f.imag() << endl;
+                GComp_Real << sqrtS << " " << amplitudes.g.real() << endl;
+                GComp_Imag << sqrtS << " " << amplitudes.g.imag() << endl;
             }
         }
         TString ct_nonflip = Form("cth_%g_%g_nonflip", bin[0]*100, bin[1]*100);

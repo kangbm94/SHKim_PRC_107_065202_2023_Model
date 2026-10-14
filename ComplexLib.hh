@@ -1,5 +1,5 @@
-#ifndef SHKIM_RPR_COMPLEX_LIB_HH
-#define SHKIM_RPR_COMPLEX_LIB_HH
+#ifndef COMPLEX_LIB_HH
+#define COMPLEX_LIB_HH
 
 // Complex 2x2/4x4 algebra used by the RPR model.
 // Eigen is header-only.  The second include form works on systems where
@@ -17,7 +17,7 @@
 #include <complex>
 #include <stdexcept>
 
-namespace rpr {
+namespace clib {
 
 using Complex  = std::complex<double>;
 using CMatrix2 = Eigen::Matrix2cd;
@@ -37,6 +37,7 @@ inline const CMatrix2 SigmaZ =
                    0.0, -1.0).finished();
 inline const std::array<CMatrix2, 3> Sigma = {SigmaX, SigmaY, SigmaZ};
 
+inline const CMatrix2 Identity2 = CMatrix2::Identity();
 inline const CMatrix4 Identity4 = CMatrix4::Identity();
 inline const CMatrix4 Gamma0 =
     (CMatrix4() << 1.0, 0.0, 0.0, 0.0,
@@ -127,7 +128,7 @@ inline double SpatialNorm2(const CVector4& a)
 }
 
 // Positive-energy spinor with spin quantized along the fixed z axis.
-// spin=0 means up; spin=1 means down.  The normalization is ubar*u=1.
+// spin=0 means up; spin=1 means down.  The normalization is ubar*u= 2m.
 inline CVector4 DiracSpinor(const CVector4& p, double mass, int spin)
 {
     if (spin != 0 && spin != 1)
@@ -141,7 +142,8 @@ inline CVector4 DiracSpinor(const CVector4& p, double mass, int spin)
     chi << (spin == 0 ? 1.0 : 0.0), (spin == 1 ? 1.0 : 0.0);
 
     const CMatrix2 sigmaP = SigmaX * p(1) + SigmaY * p(2) + SigmaZ * p(3);
-    const double normalization = std::sqrt((energy + mass) / (2.0 * mass));
+    //const double normalization = std::sqrt((energy + mass) / (2.0 * mass));
+    const double normalization = std::sqrt((energy + mass));
 
     CVector4 result;
     result.head<2>() = normalization * chi;
@@ -277,6 +279,6 @@ inline CMatrix4 ContractDelta7Half(const CVector4& a, const CVector4& b,
            -gammaCoefficient*aBarGammaBarGammaB;
 }
 
-} // namespace rpr
+} // namespace clib
 
 #endif

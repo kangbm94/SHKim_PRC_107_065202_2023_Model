@@ -7,7 +7,6 @@
 #include <cmath>
 #include <stdexcept>
 
-namespace rpr {
 
 inline double KallenFunction(double x, double y, double z)
 {
@@ -153,6 +152,5 @@ inline CMatrix2 ProjectToFG(const CMatrix2& amplitude)
     return ExtractFG(amplitude).reconstructed;
 }
 
-} // namespace rpr
 
 #endif

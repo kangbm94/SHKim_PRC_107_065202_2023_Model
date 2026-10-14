@@ -1,4 +1,4 @@
-#include "../../Include/Dir.hh"
+#include "../Include/Dir.hh"
 #include "FitE42.hh"
 std::vector<E42Point> gE42Data;
 std::vector<ForwardPoint> gForwardData;
@@ -391,25 +391,25 @@ void FitLambda2110(){
     minuit->mnparm(3, "Sigma2030_amplitudeScale", 0.55, 0.01, 0.45, 0.7,ierflg);
     minuit->mnparm(4, "Lambda2100_amplitudeScale", 1.0, 0.01, 0.9, 1.1,ierflg);
     minuit->Migrad();
-    double gS2100, gS2100_err, MS2100, MS2100_err, WS2100, WS2100_err, gS2030, gS2030_err, gL2100, gL2100_err;
-    minuit->GetParameter(0, MS2100, MS2100_err);
-    minuit->GetParameter(1, WS2100, WS2100_err);
-    minuit->GetParameter(2, gS2100, gS2100_err);
+    double gL2110, gL2110_err, ML2110, ML2110_err, WL2110, WL2110_err, gS2030, gS2030_err, gL2100, gL2100_err;
+    minuit->GetParameter(0, ML2110, MS2100_err);
+    minuit->GetParameter(1, WL2110, WS2100_err);
+    minuit->GetParameter(2, gL2110, gL2110_err);
     minuit->GetParameter(3, gS2030, gS2030_err);
     minuit->GetParameter(4, gL2100, gL2100_err);
     ofstream result_file("FitResult_Lambda2110.txt");
-    result_file<<"Fit Result: S2100 = "<<gS2100<<"+/-"<<gS2100_err<<", M = "<<MS2100<<"+/-"<<MS2100_err<<", W = "<<WS2100<<"+/-"<<WS2100_err<<std::endl;
+    result_file<<"Fit Result: L2110 = "<<gL2110<<"+/-"<<gL2110_err<<", M = "<<MS2100<<"+/-"<<MS2100_err<<", W = "<<WS2100<<"+/-"<<WS2100_err<<std::endl;
     result_file<<"Fit Result: S2030 = "<<gS2030<<"+/-"<<gS2030_err<<std::endl;
     result_file<<"Fit Result: S2100 = "<<gL2100<<"+/-"<<gL2100_err<<std::endl;
     result_file.close();
-    cout<<"Fit Result: S2100 g = "<<gS2100<<"+/-"<<gS2100_err<<", M = "<<MS2100<<"+/-"<<MS2100_err<<", W = "<<WS2100<<"+/-"<<WS2100_err<<std::endl;
-    cout<<"Fit Result: gS2030, gS2100 = "<<gS2030<<"+/-"<<gS2030_err<<", "<<gL2100<<"+/-"<<gL2100_err<<std::endl;
+    cout<<"Fit Result: S2100 g = "<<gL2110<<"+/-"<<gL2110_err<<", M = "<<MS2100<<"+/-"<<MS2100_err<<", W = "<<WS2100<<"+/-"<<WS2100_err<<std::endl;
+    cout<<"Fit Result: gS2030, gL2110 = "<<gS2030<<"+/-"<<gS2030_err<<", "<<gL2100<<"+/-"<<gL2100_err<<std::endl;
     RPRModel model;
     ConfigureModel(model);
     auto& Lambda2110 = model.Get("Lambda2110");
     Lambda2110.mass = MS2100;
     Lambda2110.width = WS2100;
-    Lambda2110.amplitudeScale = Complex(gS2100, 0.0);
+    Lambda2110.amplitudeScale = Complex(gL2110, 0.0);
     auto& Sigma2030 = model.Get("Sigma2030");
     Sigma2030.amplitudeScale = Complex(gS2030, 0.0);
     auto& Lambda2100 = model.Get("Lambda2100");

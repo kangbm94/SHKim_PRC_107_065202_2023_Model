@@ -9,7 +9,6 @@
 #include <stdexcept>
 #include <string>
 
-namespace rpr {
 
 enum class Channel { S, U };
 enum class VertexType {
@@ -180,39 +179,39 @@ inline ResonanceMap DefaultResonances()
     ResonanceMap result;
     auto add = [&result](const Resonance& r) { result[r.name] = r; };
      // name, family, channel, vertextype,
-     // spin, parity, mass, width, gKN, gKXi, isospin,
+     // spin, parity, mass, width, gKN, gKXi, isospinFactor,
      // reggeized, reggeIntercept, reggeSlope, reggeEta, enabled
     add({"u_lambda", "Lambda", Channel::U, VertexType::Pseudovector,
-         0.5, +1, 1.115683, 0.0, -13.24, 3.52, -1.0,
+         1./2, +1, 1.115683, 0.0, -13.24, 3.52, -1.0,
          true, -0.65, 0.94, 2.60, true, Complex(1.0,0.0)});
     add({"u_sigma", "Sigma", Channel::U, VertexType::Pseudovector,
-         0.5, +1, 1.192642, 0.0, 3.58, -13.26, +1.0,
+         1./2, +1, 1.192642, 0.0, 3.58, -13.26, +1.0,
          true, -0.79, 0.87, 0.66, true, Complex(1.0,0.0)});
     add({"u_sigma1385", "Sigma", Channel::U, VertexType::HighSpinDerivative,
-         1.5, +1, 1.3837, 0.0, -3.22, -3.22, +1.0,
+         3./2, +1, 1.3837, 0.0, -3.22, -3.22, +1.0,
          true, -0.27, 0.90, 0.66, true, Complex(1.0,0.0)});
 
     add({"s_lambda", "Lambda", Channel::S, VertexType::Pseudovector,
-         0.5, +1, 1.115683, 0.0, -13.24, 3.52, -1.0,
+         1./2, +1, 1.115683, 0.0, -13.24, 3.52, -1.0,
          false, 0.0, 0.0, 1.0, true, Complex(1.0,0.0)});
     add({"s_sigma", "Sigma", Channel::S, VertexType::Pseudovector,
-         0.5, +1, 1.192642, 0.0, 3.58, -13.26, +1.0,
+         1./2, +1, 1.192642, 0.0, 3.58, -13.26, +1.0,
          false, 0.0, 0.0, 1.0, true, Complex(1.0,0.0)});
 
     add({"Lambda1890", "Lambda", Channel::S, VertexType::HighSpinDerivative,
-         1.5, +1, 1.890, 0.120, 0.84, -0.26, -1.0,
+         3./2, +1, 1.890, 0.120, 0.84, -0.26, -1.0,
          false, 0.0, 0.0, 1.0, true, Complex(1.0,0.0)});
     add({"Lambda2100", "Lambda", Channel::S, VertexType::HighSpinDerivative,
-         3.5, -1, 2.100, 0.200, 2.41, 2.95, -1.0,
+         7./2, -1, 2.100, 0.200, 2.41, 2.95, -1.0,
          false, 0.0, 0.0, 1.0, true, Complex(1.0,0.0)});
     add({"Sigma2030", "Sigma", Channel::S, VertexType::HighSpinDerivative,
-         3.5, +1, 2.030, 0.180, 0.82, -0.93, +1.0,
+         7./2, +1, 2.030, 0.180, 0.82, -0.93, +1.0,
          false, 0.0, 0.0, 1.0, true, Complex(1.0,0.0)});
     add({"Sigma2230", "Sigma", Channel::S, VertexType::HighSpinDerivative,
-         1.5, +1, 2.230, 0.345, 0.41, 0.34, +1.0,
+         3./2, +1, 2.230, 0.345, 0.41, 0.34, +1.0,
          false, 0.0, 0.0, 1.0, true, Complex(1.0,0.0)});
     add({"Sigma2250", "Sigma", Channel::S, VertexType::HighSpinDerivative,
-         3.5, -1, 2.290, 0.100, 0.59, 0.88, +1.0,
+         7./2, -1, 2.290, 0.100, 0.59, 0.88, +1.0,
          false, 0.0, 0.0, 1.0, true, Complex(1.0,0.0)});
     return result;
 }
@@ -253,6 +252,5 @@ inline Resonance MakeHighSpinResonance(const std::string& name,
             false, 0.0, 0.0, 1.0, true, Complex(1.0,0.0)};
 }
 
-} // namespace rpr
 
 #endif
